@@ -215,7 +215,8 @@
                       <div class="h-11 w-11 flex-shrink-0">
                         <% if (students[i].imageurl) { %>
                         <img
-                          src="<%= students[i].imageurl %>"
+                          src="<%=
+                        students[i].imageurl.replace(students[i].firstname,'thumb'+ students[i].firstname) %>"
                           width="40"
                           class="rounded-full"
                         />
@@ -242,7 +243,8 @@
                       class="whitespace-nowrap px-3 py-5 text-sm text-gray-500"
                     >
                       <div class="text-gray-900">
-                        <%= students[i].birthdate %>
+                        <%= students[i].birthdate.split('-').reverse().join('-')
+                        %>
                       </div>
                     </td>
                     <td
@@ -260,7 +262,7 @@
                       </div>
                     </td>
                     <td
-                      class="relative whitespace-nowrap py-5 pl-3 pr-4 text-left text-sm font-medium sm:pr-0 space-x-4"
+                      class="relative whitespace-nowrap py-5 pl-3 pr-4 ml-8 text-left text-sm font-medium sm:pr-0 space-x-4"
                     >
                       <a
                         href="/dashboard/update/<%= students[i].studentId %>"
