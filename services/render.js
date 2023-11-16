@@ -93,6 +93,13 @@ exports.update = async (req, res) => {
   }
 }
 
+async function toVercelBlob(name, buffer) {
+  const options = { access: "public", addRandomSuffix: false }
+  const blob = await put(name, buffer, options)
+  console.log(blob)
+  return blob.url
+}
+
 //
 //
 // create page submit *
@@ -106,14 +113,9 @@ exports.createStudent = async (req, res) => {
     let imageURL = null
 
     const fname = req.body.firstname.trim()
-    const lname = req.body.lastname.trim()
-    const birthdate = req.body.birthdate
-    const phone = req.body.contact
-    const address = req.body.address.trim()
 
     if (req.file) {
       const file = req.file
-      const name = file.originalname
       const inputBuffer = req.file.buffer
 
       if (inputBuffer.length > 300000) {
@@ -129,23 +131,16 @@ exports.createStudent = async (req, res) => {
         })
       }
 
-      const options = { access: "public", addRandomSuffix: false }
-      const blob = await put(fname, inputBuffer, options)
-      console.log(blob)
-      imageURL = blob.url
-
+      imageURL = await toVercelBlob(fname, inputBuffer)
       const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-
-      const tblob = await put("thumb" + fname, outBuffer, options)
-      console.log(tblob)
-      thumbnailURL = tblob.url
+      const thumbnailURL = await toVercelBlob("thumb" + fname, outBuffer)
     }
     const newStudent = await Students.create({
       s_firstname: fname,
-      s_lastname: lname,
-      s_birthdate: birthdate,
-      s_contactno: phone,
-      s_address: address,
+      s_lastname: req.body.lastname.trim(),
+      s_birthdate: req.body.birthdate,
+      s_contactno: req.body.contact,
+      s_address: req.body.address.trim(),
       s_image_url: imageURL,
       updatedAt: new Date(),
     })
@@ -174,35 +169,6 @@ exports.createStudent = async (req, res) => {
 
 //
 //
-// delete data *
-exports.delete = async (req, res) => {
-  if (!req.auth.userId) {
-    return res.render("error")
-  } else {
-    try {
-      const userId = req.auth.userId
-
-      const sid = req.params.sid
-      await Students.update(
-        { isRemoved: true, updatedAt: new Date() },
-        { where: { s_id: sid } }
-      )
-      res.send(200)
-
-      await Crudlogs.create({
-        user_id: userId,
-        action_type: "DELETE",
-        target_student_id: sid,
-      })
-      return
-    } catch (err) {
-      return res.render("error")
-    }
-  }
-}
-
-//
-//
 // update student data
 exports.updateStudent = async (req, res) => {
   const studentData = {}
@@ -213,16 +179,15 @@ exports.updateStudent = async (req, res) => {
       const userId = req.auth.userId
 
       const sid = req.params.sid
-      const fname = req.body.firstname
-      const lname = req.body.lastname
+      const fname = req.body.firstname.trim()
+      const lname = req.body.lastname.trim()
       const birthdate = req.body.birthdate
       const phone = req.body.contact
-      const address = req.body.address
+      const address = req.body.address.trim()
 
       let imageURL = null
       if (req.file) {
         const file = req.file
-        const name = file.originalname
         const inputBuffer = file.buffer
 
         if (inputBuffer.length > 300000) {
@@ -238,16 +203,9 @@ exports.updateStudent = async (req, res) => {
           })
         }
 
-        const options = { access: "public", addRandomSuffix: false }
-        const blob = await put(fname, inputBuffer, options)
-        console.log(blob)
-        imageURL = blob.url
-
+        imageURL = await toVercelBlob(fname, inputBuffer)
         const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-
-        const tblob = await put("thumb" + fname, outBuffer, options)
-        console.log(tblob)
-        thumbnailURL = tblob.url
+        const thumbnailURL = await toVercelBlob("thumb" + fname, outBuffer)
       }
 
       if (fname !== undefined && fname !== null && fname !== "") {
@@ -282,5 +240,34 @@ exports.updateStudent = async (req, res) => {
   } catch (err) {
     console.error(err)
     return res.render("error")
+  }
+}
+
+//
+//
+// delete data *
+exports.delete = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("error")
+  } else {
+    try {
+      const userId = req.auth.userId
+
+      const sid = req.params.sid
+      await Students.update(
+        { isRemoved: true, updatedAt: new Date() },
+        { where: { s_id: sid } }
+      )
+      res.send(200)
+
+      await Crudlogs.create({
+        user_id: userId,
+        action_type: "DELETE",
+        target_student_id: sid,
+      })
+      return
+    } catch (err) {
+      return res.render("error")
+    }
   }
 }
