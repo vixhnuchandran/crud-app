@@ -1,23 +1,8 @@
 const { Router } = require("express")
 const route = Router()
 const path = require("path")
-const fs = require("fs").promises
 const Students = require("../model/student")
-
-async function sendLogFile(req, res, next) {
-  try {
-    const filePath = path.join(__dirname, "../access.log")
-    const data = await fs.readFile(filePath, "utf-8")
-    return res.status(200).json({ logs: data.split("\n") })
-  } catch (error) {
-    console.error(error)
-    return res
-      .status(500)
-      .json({ error: `Internal Server Error: ${error.stack}` })
-  }
-}
-
-route.get("/api/v1/logs", sendLogFile)
+const Crudlogs = require("../model/crudlog")
 
 route.get("/api/v1/students", async (req, res) => {
   const data = await Students.findAll({
@@ -53,4 +38,18 @@ route.get("/api/v1/students/:sid", async (req, res) => {
 
   return res.status(200).json(data)
 })
+
+route.get("/api/v1/logs", async (req, res) => {
+  const data = await Crudlogs.findAll({
+    attributes: [
+      ["user_id", "User ID"],
+      ["action_type", "Action"],
+      ["target_student_id", "Target ID"],
+      ["timestamp", "Timestamp"],
+    ],
+  })
+
+  return res.status(200).json(data)
+})
+
 module.exports = route
