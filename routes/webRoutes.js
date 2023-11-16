@@ -1,7 +1,6 @@
 const { Router } = require("express")
 const { ClerkExpressWithAuth } = require("@clerk/clerk-sdk-node")
 const services = require("../services/render")
-const clerk = require("../config/clerk")
 const multer = require("multer")
 
 const route = Router()
@@ -24,7 +23,7 @@ route.post(
   upload.single("file"),
   services.createStudent
 )
-
+g ad
 route.post(
   "/dashboard/update/:sid",
   ClerkExpressWithAuth({}),
