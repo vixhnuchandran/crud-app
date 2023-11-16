@@ -1,5 +1,4 @@
 .env
-access.log
 .prettierrc
 node_modules/
 .vscode/
