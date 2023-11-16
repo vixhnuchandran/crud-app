@@ -1,5 +1,5 @@
 const { sequelize } = require("../config/database")
-const { DataTypes } = require("sequelize")
+const { DataTypes, DATE } = require("sequelize")
 
 const Crudlogs = sequelize.define(
   "crudlogs",
@@ -28,8 +28,8 @@ const Crudlogs = sequelize.define(
   { freezeTableName: true, timestamps: false }
 )
 
-// Crudlogs.sync({ force: true }).then(() => {
-//   console.log(`Table created!`)
-// })
+Crudlogs.sync({ force: true }).then(() => {
+  console.log(`Table created!`)
+})
 
 module.exports = Crudlogs
