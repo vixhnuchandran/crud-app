@@ -278,6 +278,7 @@
             await fetch(`/dashboard/delete/${userId}`, {
               method: "PATCH",
             })
+            location.reload()
           } catch (error) {}
         }
       }
