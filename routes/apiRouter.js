@@ -1,23 +1,21 @@
 const { Router } = require("express")
 const route = Router()
 const path = require("path")
-const fs = require("fs")
+const fs = require("fs").promises
 const Students = require("../model/student")
 
-async function sendLogFIle(req, res, next) {
+async function sendLogFile(req, res, next) {
   try {
     const filePath = path.join(__dirname, "../access.log")
-    fs.readFile(filePath, "utf-8", (err, data) => {
-      return res.status(200).json({ logs: data.split("\n") })
-    })
+    const data = await fs.readFile(filePath, "utf-8")
+    return res.status(200).json({ logs: data.split("\n") })
   } catch (error) {
-    return res
-      .status(500)
-      .send({ message: `Internal Server Error", ${error.message}` })
+    console.error(error)
+    return res.status(500).json({ error: "Internal Server Error" })
   }
 }
 
-route.get("/api/v1/logs", sendLogFIle)
+route.get("/api/v1/logs", sendLogFile)
 
 route.get("/api/v1/students", async (req, res) => {
   const data = await Students.findAll({
