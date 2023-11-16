@@ -13,6 +13,8 @@ route.get("/dashboard", ClerkExpressWithAuth({}), services.dashboard)
 
 route.get("/about", ClerkExpressWithAuth({}), services.about)
 
+route.get("/logs", ClerkExpressWithAuth({}), services.logs)
+
 route.get("/dashboard/create/", ClerkExpressWithAuth({}), services.create)
 
 route.get("/dashboard/update/:sid", ClerkExpressWithAuth({}), services.update)

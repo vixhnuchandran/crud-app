@@ -1,6 +1,5 @@
 const { Router } = require("express")
 const route = Router()
-const path = require("path")
 const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
 
