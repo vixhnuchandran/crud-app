@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SB-SMS</title>
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link type="text/css" rel="stylesheet" href="/css/style.css" />
+    <script src="/js/index.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <%- include('include/_navbar.ejs') %>
+    <div
+      id="current-image"
+      class="flex items-center justify-center space-x-4 my-10"
+    >
+      <% if (student.imageurl) { %> <img src="<%= student.imageurl %>"
+      alt="profile-image" width="100" class= rounded-full" /> <% } else { %>
+      <img src="/img/null.png" alt="profile-image" width="100" class="" />
+      <% } %>
+
+      <h1 class="text-5xl text-center font-medium">
+        ID: <%= student.studentId %>
+      </h1>
+    </div>
+
+    <div id="flex-container" class="flex items-center justify-center h-screen">
+      <div id="flex-item" class="mb-auto">
+        <form
+          class="w-full max-w-lg"
+          action="/dashboard/update/<%= student.studentId %>"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="first-name"
+                >First Name</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-grey-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                id="first-name"
+                type="text"
+                name="firstname"
+                value="<%= student.firstname %>"
+                placeholder="Jane"
+              />
+              <!-- <p class="form-warning text-red-500 text-xs italic">
+                Please fill out this field.
+              </p> -->
+            </div>
+            <div class="w-full md:w-1/2 px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="last-name"
+                >Last Name</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                id="last-name"
+                type="text"
+                value="<%= student.lastname %>"
+                placeholder="Doe"
+                name="lastname"
+              />
+              <!-- <p class="form-warning text-gray-700 text-xs italic">Optional.</p> -->
+            </div>
+          </div>
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="birth-date"
+                >Birth Date</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-grey-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                id="birth-date"
+                type="date"
+                placeholder="Jane"
+                name="birthdate"
+                value="<%= student.birthdate %>"
+              />
+              <!-- <p class="form-warning text-red-500 text-xs italic">
+                Please fill out this field.
+              </p> -->
+            </div>
+            <div class="w-full md:w-1/2 px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="contact"
+                >Contact</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-grey-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                id="contact"
+                type="text"
+                minlength="10"
+                maxlength="10"
+                placeholder="+91"
+                name="contact"
+                value="<%= student.contact %>"
+              />
+              <!-- <p class="form-warning text-red-500 text-xs italic">
+                Please fill out this field (without +91).
+              </p> -->
+            </div>
+          </div>
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="address"
+                >Address</label
+              >
+              <textarea
+                class="form-input appearance-none h-40 resize-none block w-full bg-gray-200 text-gray-700 border border-grey-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                id="address"
+                type="tel"
+                placeholder="Enter full address"
+                name="address"
+              >
+<%= student.address %></textarea
+              >
+              <!-- <p class="form-warning text-red-500 text-xs italic">
+                Please fill out this field.
+              </p> -->
+            </div>
+          </div>
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="image"
+                >Image</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="image"
+                type="file"
+                name="file"
+                accept=".png, .jpg, .jpeg"
+              />
+              <p class="form-warning text-grey-700 text-xs italic">
+                Limit 1MB (JPEG,JPG,PNG format only).
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-wrap justify-center mx-3 mb-6">
+            <div class="px-3&quot;">
+              <button
+                type="submit"
+                class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                <svg
+                  class="-ml-0.5 h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      <!-- document.addEventListener("DOMContentLoaded", () => {
+        updateInputBorders()
+      })
+
+      document.addEventListener("input", () => {
+        updateInputBorders()
+      })
+
+      function updateInputBorders() {
+        const inputs = document.querySelectorAll(".form-input")
+
+        inputs.forEach(i => {
+          i.classList.toggle("border-green-500", i.value.trim() !== "")
+        })
+      } -->
+    </script>
+  </body>
+</html>
