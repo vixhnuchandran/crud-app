@@ -23,7 +23,7 @@ route.post(
   upload.single("file"),
   services.createStudent
 )
-g ad
+
 route.post(
   "/dashboard/update/:sid",
   ClerkExpressWithAuth({}),
