@@ -1,7 +1,6 @@
 const { put } = require("@vercel/blob")
-const { performance } = require("perf_hooks")
 const Students = require("../model/student")
-const logger = require("../utils/logger")
+const Crudlogs = require("../model/crudlog")
 const sharp = require("sharp")
 require("dotenv").config()
 
@@ -13,7 +12,6 @@ exports.dashboard = async (req, res) => {
     return res.render("dashboardError")
   } else {
     try {
-      const startTime = performance.now()
       const data = await Students.findAll({
         where: { isRemoved: false },
         attributes: [
@@ -27,11 +25,6 @@ exports.dashboard = async (req, res) => {
         ],
         order: [["s_id", "ASC"]],
       })
-
-      // Api Time Check
-      // const endTime = performance.now()
-      // const totalTime = (endTime - startTime).toFixed(2)
-      // console.log(`\n Dashboard API call took ${totalTime} milliseconds`)
 
       const students = data.map(student => student.toJSON())
 
@@ -74,7 +67,6 @@ exports.update = async (req, res) => {
     return res.render("error")
   } else {
     try {
-      const startTime = performance.now()
       const sid = req.params.sid
 
       if (sid) {
@@ -91,11 +83,7 @@ exports.update = async (req, res) => {
           ],
         })
         const student = data.toJSON()
-        // Api Time Taken
-        const endTime = performance.now()
-        const totalTime = (endTime - startTime).toFixed(2)
-        console.log(`Update Form API call took ${totalTime} milliseconds`)
-        // console.log(req)
+
         return res.render("update", { heading: "Update Student", student })
       }
     } catch (err) {
@@ -106,6 +94,7 @@ exports.update = async (req, res) => {
 }
 
 //
+//
 // create page submit *
 exports.createStudent = async (req, res) => {
   if (!req.auth.userId || !req.body) {
@@ -113,8 +102,6 @@ exports.createStudent = async (req, res) => {
   }
   try {
     const userId = req.auth.userId
-
-    const startTime = performance.now()
 
     let imageURL = null
 
@@ -163,16 +150,15 @@ exports.createStudent = async (req, res) => {
       updatedAt: new Date(),
     })
 
-    //Api Time Taken
-    const endTime = performance.now()
-    const totalTime = (endTime - startTime).toFixed(2)
-    console.log(` Create Student API call took ${totalTime} milliseconds`)
+    res.redirect("/dashboard")
 
-    logger.info(
-      `New Data[fname: ${fname}, lname: ${lname}] Creates by user with userID: ${userId}`
-    )
-
-    return res.redirect("/dashboard")
+    const studentId = newStudent.s_id
+    await Crudlogs.create({
+      user_id: userId,
+      action_type: "CREATE",
+      target_student_id: studentId,
+    })
+    return
   } catch (err) {
     console.error(err)
 
@@ -187,6 +173,7 @@ exports.createStudent = async (req, res) => {
 }
 
 //
+//
 // delete data *
 exports.delete = async (req, res) => {
   if (!req.auth.userId) {
@@ -195,29 +182,26 @@ exports.delete = async (req, res) => {
     try {
       const userId = req.auth.userId
 
-      const startTime = performance.now()
-
       const sid = req.params.sid
       await Students.update(
         { isRemoved: true, updatedAt: new Date() },
         { where: { s_id: sid } }
       )
+      res.send(200)
 
-      // Api Time Taken
-      const endTime = performance.now()
-      const totalTime = (endTime - startTime).toFixed(2)
-      console.log(`Delete Student API call took ${totalTime} milliseconds`)
-
-      logger.info(
-        `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
-      )
-      return res.send(200)
+      await Crudlogs.create({
+        user_id: userId,
+        action_type: "DELETE",
+        target_student_id: sid,
+      })
+      return
     } catch (err) {
       return res.render("error")
     }
   }
 }
 
+//
 //
 // update student data
 exports.updateStudent = async (req, res) => {
@@ -226,8 +210,6 @@ exports.updateStudent = async (req, res) => {
     if (!req.auth.userId || !req.body) {
       return res.render("error")
     } else {
-      const startTime = performance.now()
-
       const userId = req.auth.userId
 
       const sid = req.params.sid
@@ -289,18 +271,13 @@ exports.updateStudent = async (req, res) => {
       studentData.updatedAt = new Date()
       await Students.update(studentData, { where: { s_id: sid } })
 
-      //Api Time Taken
-      const endTime = performance.now()
-      const totalTime = (endTime - startTime).toFixed(2)
-      console.log(` update student API call took ${totalTime} milliseconds`)
-
-      logger.info(
-        `Student Data[${JSON.stringify(
-          studentData
-        )}] with ID ${sid} Updated by user with userID: ${userId}`
-      )
-
-      return res.redirect("/dashboard")
+      res.redirect("/dashboard")
+      await Crudlogs.create({
+        user_id: userId,
+        action_type: "UPDATE",
+        target_student_id: sid,
+      })
+      return
     }
   } catch (err) {
     console.error(err)
