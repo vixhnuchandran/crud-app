@@ -47,4 +47,15 @@ const Students = sequelize.define(
 //   console.log(`Table created!`)
 // })
 
+// async function updateIsRemovedColumn() {
+//   try {
+//     await Students.update({ isRemoved: false }, { where: {} })
+//     console.log("Update successful!")
+//   } catch (error) {
+//     console.error("Error updating records:", error)
+//   } finally {
+//     await sequelize.close()
+//   }
+// }
+// updateIsRemovedColumn()
 module.exports = Students

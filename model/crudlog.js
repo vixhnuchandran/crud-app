@@ -10,19 +10,19 @@ const Crudlogs = sequelize.define(
       autoIncrement: true,
     },
     user_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     action_type: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     target_student_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     timestamp: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
   },
   { freezeTableName: true, timestamps: false }
