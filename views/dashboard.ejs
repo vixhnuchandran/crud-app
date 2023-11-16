@@ -275,10 +275,12 @@
 
         if (confirmed) {
           try {
-            fetch(`/dashboard/delete/${userId}`, {
+            const response = fetch(`/dashboard/delete/${userId}`, {
               method: "PATCH",
             })
-            window.location.reload()
+            if (response.ok) {
+              window.location.reload()
+            }
           } catch (error) {}
         }
       }
