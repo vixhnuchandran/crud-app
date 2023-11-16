@@ -27,6 +27,22 @@
           trElements[i].style.display = ""
         }
       }
+      async function deleteUser(userId) {
+        const confirmed = confirm(
+          "Are you sure you want to delete this Student?"
+        )
+
+        if (confirmed) {
+          try {
+            const response = await fetch(`/dashboard/delete/${userId}`, {
+              method: "PATCH",
+            })
+            if (response.ok) {
+              window.location.reload()
+            }
+          } catch (error) {}
+        }
+      }
 
       function searchTable() {
         let input = document.getElementById("searchInput")
@@ -267,23 +283,5 @@
         </div>
       </div>
     </div>
-    <script>
-      function deleteUser(userId) {
-        const confirmed = confirm(
-          "Are you sure you want to delete this Student?"
-        )
-
-        if (confirmed) {
-          try {
-            const response = fetch(`/dashboard/delete/${userId}`, {
-              method: "PATCH",
-            })
-            if (response.ok) {
-              window.location.reload()
-            }
-          } catch (error) {}
-        }
-      }
-    </script>
   </body>
 </html>
