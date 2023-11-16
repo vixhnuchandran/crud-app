@@ -200,10 +200,10 @@ exports.delete = async (req, res) => {
       )
       return res.redirect("/dashboard")
 
-      //Api Time Taken
-      // const endTime = performance.now()
-      // const totalTime = (endTime - startTime).toFixed(2)
-      // console.log(`Delete Student API call took ${totalTime} milliseconds`)
+      // Api Time Taken
+      const endTime = performance.now()
+      const totalTime = (endTime - startTime).toFixed(2)
+      console.log(`Delete Student API call took ${totalTime} milliseconds`)
 
       // logger.info(
       //   `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
