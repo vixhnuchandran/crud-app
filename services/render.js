@@ -128,7 +128,7 @@ exports.createStudent = async (req, res) => {
       const name = file.originalname
       const inputBuffer = req.file.buffer
 
-      if (inputBuffer.length > 1000000) {
+      if (inputBuffer.length > 300000) {
         return res
           .status(400)
           .json({ error: "File size must be less than 1MB" })
@@ -165,7 +165,7 @@ exports.createStudent = async (req, res) => {
     console.log(` Create Student API call took ${totalTime} milliseconds`)
 
     logger.info(
-      `New Data[fname: ${fname}, lname: ${lname}] Creates by user with userID: ${userId}  `
+      `New Data[fname: ${fname}, lname: ${lname}] Creates by user with userID: ${userId}`
     )
 
     return res.redirect("/dashboard")
@@ -240,7 +240,7 @@ exports.updateStudent = async (req, res) => {
         const name = file.originalname
         const inputBuffer = file.buffer
 
-        if (inputBuffer.length > 1000000) {
+        if (inputBuffer.length > 300000) {
           return res
             .status(400)
             .json({ error: "File size must be less than 1MB" })
