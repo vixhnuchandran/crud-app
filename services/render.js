@@ -2,9 +2,12 @@ const { put } = require("@vercel/blob")
 const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
 const sharp = require("sharp")
+const { Clerk, clerkClient } = require("@clerk/clerk-sdk-node")
+const { use } = require("../routes/webRoutes")
 require("dotenv").config()
 
 const URL = process.env.BASE_URL
+const clerk = Clerk({ secretKey: process.env.CLERK_SECRET_KEY })
 
 // dashboard
 exports.dashboard = async (req, res) => {
@@ -27,7 +30,6 @@ exports.dashboard = async (req, res) => {
       })
 
       const students = data.map(student => student.toJSON())
-
       return res.render("dashboard", { students })
     } catch (error) {
       console.log(error.stack)
@@ -36,6 +38,32 @@ exports.dashboard = async (req, res) => {
   }
 }
 
+//logs
+exports.logs = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError")
+  } else {
+    try {
+      const data = await Crudlogs.findAll({
+        attributes: [
+          ["sl_no", "slno"],
+          ["user_id", "userid"],
+          ["action_type", "action"],
+          ["target_student_id", "targetid"],
+          ["timestamp", "timestamp"],
+        ],
+        order: [["sl_no", "DESC"]],
+      })
+
+      const logs = data.map(log => log.toJSON())
+
+      return res.render("logs", { logs })
+    } catch (error) {
+      console.log(error.stack)
+      return
+    }
+  }
+}
 //
 // error page
 exports.error = (req, res) => {
@@ -108,7 +136,7 @@ exports.createStudent = async (req, res) => {
     return res.render("error")
   }
   try {
-    const userId = req.auth.userId
+    const user = await clerkClient.users.getUser(req.auth.userId)
 
     let imageURL = null
 
@@ -149,7 +177,7 @@ exports.createStudent = async (req, res) => {
 
     const studentId = newStudent.s_id
     await Crudlogs.create({
-      user_id: userId,
+      user_id: user.username,
       action_type: "CREATE",
       target_student_id: studentId,
     })
@@ -176,7 +204,7 @@ exports.updateStudent = async (req, res) => {
     if (!req.auth.userId || !req.body) {
       return res.render("error")
     } else {
-      const userId = req.auth.userId
+      const user = await clerkClient.users.getUser(req.auth.userId)
 
       const sid = req.params.sid
       const fname = req.body.firstname.trim()
@@ -231,7 +259,7 @@ exports.updateStudent = async (req, res) => {
 
       res.redirect("/dashboard")
       await Crudlogs.create({
-        user_id: userId,
+        user_id: user.username,
         action_type: "UPDATE",
         target_student_id: sid,
       })
@@ -251,7 +279,7 @@ exports.delete = async (req, res) => {
     return res.render("error")
   } else {
     try {
-      const userId = req.auth.userId
+      const user = await clerkClient.users.getUser(req.auth.userId)
 
       const sid = req.params.sid
       await Students.update(
@@ -261,7 +289,7 @@ exports.delete = async (req, res) => {
       res.send(200)
 
       await Crudlogs.create({
-        user_id: userId,
+        user_id: user.username,
         action_type: "DELETE",
         target_student_id: sid,
       })
