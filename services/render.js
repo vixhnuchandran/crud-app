@@ -198,16 +198,16 @@ exports.delete = async (req, res) => {
         { isRemoved: true, updatedAt: new Date() },
         { where: { s_id: sid } }
       )
+      return res.redirect("/dashboard")
 
       //Api Time Taken
-      const endTime = performance.now()
-      const totalTime = (endTime - startTime).toFixed(2)
-      console.log(`Delete Student API call took ${totalTime} milliseconds`)
+      // const endTime = performance.now()
+      // const totalTime = (endTime - startTime).toFixed(2)
+      // console.log(`Delete Student API call took ${totalTime} milliseconds`)
 
-      logger.info(
-        `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
-      )
-      return res.send(200)
+      // logger.info(
+      //   `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
+      // )
     } catch (err) {
       return res.render("error")
     }

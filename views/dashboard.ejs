@@ -23,10 +23,9 @@
 
         if (confirmed) {
           try {
-            const response = await fetch(`/dashboard/delete/${userId}`, {
+            await fetch(`/dashboard/delete/${userId}`, {
               method: "PATCH",
             })
-            window.location.reload()
           } catch (error) {}
         }
       }
