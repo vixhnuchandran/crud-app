@@ -16,20 +16,6 @@
     href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
     rel="stylesheet""stylesheet" />
     <script>
-      async function deleteUser(userId) {
-        const confirmed = confirm(
-          "Are you sure you want to delete this Student?"
-        )
-
-        if (confirmed) {
-          try {
-            await fetch(`/dashboard/delete/${userId}`, {
-              method: "PATCH",
-            })
-          } catch (error) {}
-        }
-      }
-
       function resetTable() {
         let input = document.getElementById("searchInput")
         input.value = ""
@@ -281,5 +267,20 @@
         </div>
       </div>
     </div>
+    <script>
+      async function deleteUser(userId) {
+        const confirmed = confirm(
+          "Are you sure you want to delete this Student?"
+        )
+
+        if (confirmed) {
+          try {
+            await fetch(`/dashboard/delete/${userId}`, {
+              method: "PATCH",
+            })
+          } catch (error) {}
+        }
+      }
+    </script>
   </body>
 </html>
