@@ -1,23 +1,19 @@
 const express = require("express")
-const morgan = require("morgan")
 const path = require("path")
 const bodyParser = require("body-parser")
 const { connectDB } = require("./config/database")
-const { clerk } = require("./config/clerk")
-const fs = require("fs")
 require("dotenv").config()
 
 const app = express()
 
 // assign routes
 const webRoutes = require("./routes/webRoutes")
-const apiRoutes = require("./routes/api")
+const apiRoutes = require("./routes/apiRouter")
 
 // connect database
 connectDB()
 
 //middlewares
-app.use(morgan("tiny"))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
