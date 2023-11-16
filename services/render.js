@@ -207,8 +207,7 @@ exports.delete = async (req, res) => {
       logger.info(
         `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
       )
-
-      return res.redirect("/dashboard")
+      return res.send(200).redirect("/dashboard")
     } catch (err) {
       return res.render("error")
     }
