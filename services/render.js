@@ -25,6 +25,7 @@ exports.dashboard = async (req, res) => {
           ["s_address", "address"],
           ["s_image_url", "imageurl"],
         ],
+        order: [["s_id", "ASC"]],
       })
 
       // Api Time Check
@@ -90,11 +91,11 @@ exports.update = async (req, res) => {
           ],
         })
         const student = data.toJSON()
-        //Api Time Taken
+        // Api Time Taken
         const endTime = performance.now()
         const totalTime = (endTime - startTime).toFixed(2)
         console.log(`Update Form API call took ${totalTime} milliseconds`)
-
+        // console.log(req)
         return res.render("update", { heading: "Update Student", student })
       }
     } catch (err) {
@@ -117,11 +118,11 @@ exports.createStudent = async (req, res) => {
 
     let imageURL = null
 
-    const fname = req.body.firstname
-    const lname = req.body.lastname
+    const fname = req.body.firstname.trim()
+    const lname = req.body.lastname.trim()
     const birthdate = req.body.birthdate
     const phone = req.body.contact
-    const address = req.body.address
+    const address = req.body.address.trim()
 
     if (req.file) {
       const file = req.file
@@ -131,7 +132,7 @@ exports.createStudent = async (req, res) => {
       if (inputBuffer.length > 300000) {
         return res
           .status(400)
-          .json({ error: "File size must be less than 1MB" })
+          .json({ error: "File size must be less than 300KB" })
       }
 
       const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"]
@@ -140,16 +141,19 @@ exports.createStudent = async (req, res) => {
           error: "Invalid file type. Please upload a JPEG, JPG, or PNG file.",
         })
       }
-      console.log(inputBuffer.length)
-      const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-      console.log(outBuffer.length)
 
-      const options = { access: "public" }
-      const blob = await put(name, outBuffer, options)
+      const options = { access: "public", addRandomSuffix: false }
+      const blob = await put(fname, inputBuffer, options)
       console.log(blob)
       imageURL = blob.url
+
+      const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+
+      const tblob = await put("thumb" + fname, outBuffer, options)
+      console.log(tblob)
+      thumbnailURL = tblob.url
     }
-    await Students.create({
+    const newStudent = await Students.create({
       s_firstname: fname,
       s_lastname: lname,
       s_birthdate: birthdate,
@@ -204,11 +208,10 @@ exports.delete = async (req, res) => {
       const totalTime = (endTime - startTime).toFixed(2)
       console.log(`Delete Student API call took ${totalTime} milliseconds`)
 
+      logger.info(
+        `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
+      )
       return res.send(200)
-
-      // logger.info(
-      //   `Student Data with ID ${sid} Deleted by user with userID: ${userId}`
-      // )
     } catch (err) {
       return res.render("error")
     }
@@ -243,7 +246,7 @@ exports.updateStudent = async (req, res) => {
         if (inputBuffer.length > 300000) {
           return res
             .status(400)
-            .json({ error: "File size must be less than 1MB" })
+            .json({ error: "File size must be less than 300KB" })
         }
 
         const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"]
@@ -253,14 +256,16 @@ exports.updateStudent = async (req, res) => {
           })
         }
 
-        console.log(inputBuffer.length)
-        const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-        console.log(outBuffer.length)
-
-        const options = { access: "public" }
-        const blob = await put(name, outBuffer, options)
+        const options = { access: "public", addRandomSuffix: false }
+        const blob = await put(fname, inputBuffer, options)
         console.log(blob)
         imageURL = blob.url
+
+        const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+
+        const tblob = await put("thumb" + fname, outBuffer, options)
+        console.log(tblob)
+        thumbnailURL = tblob.url
       }
 
       if (fname !== undefined && fname !== null && fname !== "") {
