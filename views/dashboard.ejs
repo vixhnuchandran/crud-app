@@ -33,13 +33,15 @@
         )
 
         if (confirmed) {
+          const loader = document.getElementById("pre-loader")
+          loader.style.display = "block"
           try {
             const response = await fetch(`/dashboard/delete/${userId}`, {
               method: "PATCH",
             })
-            window.location.reload()
-
-            window.location.reload()
+            if (response.ok) {
+              window.location.reload()
+            }
           } catch (error) {}
         }
       }
@@ -73,11 +75,14 @@
           }
         }
       }
-
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
+        })
+
+        window.addEventListener("load", () => {
+          loader.style.display = "hidden"
         })
       })
     </script>
