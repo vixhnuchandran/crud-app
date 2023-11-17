@@ -20,11 +20,9 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       updateInputBorders()
-      document.addEventListener("DOMContentLoaded", () => {
-        const loader = document.getElementById("pre-loader")
-        window.addEventListener("beforeunload", () => {
-          loader.style.display = "block"
-        })
+      const loader = document.getElementById("pre-loader")
+      window.addEventListener("beforeunload", () => {
+        loader.style.display = "block"
       })
     })
 
