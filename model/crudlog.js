@@ -22,14 +22,14 @@ const Crudlogs = sequelize.define(
     },
     timestamp: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
+      defaultValue: DataTypes.NOW(),
     },
   },
   { freezeTableName: true, timestamps: false }
 )
 
-Crudlogs.sync({ force: true }).then(() => {
-  console.log(`Table created!`)
-})
+// Crudlogs.sync({ force: true }).then(() => {
+//   console.log(`Table created!`)
+// })
 
 module.exports = Crudlogs

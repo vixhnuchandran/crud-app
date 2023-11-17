@@ -58,4 +58,5 @@ const Students = sequelize.define(
 //   }
 // }
 // updateIsRemovedColumn()
+
 module.exports = Students
