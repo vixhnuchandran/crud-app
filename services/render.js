@@ -12,7 +12,7 @@ const clerk = Clerk({ secretKey: process.env.CLERK_SECRET_KEY })
 // dashboard
 exports.dashboard = async (req, res) => {
   if (!req.auth.userId) {
-    return res.render("dashboardError")
+    return res.render("dashboardError", { message: "Access to Dashboard" })
   } else {
     try {
       const data = await Students.findAll({
@@ -41,7 +41,7 @@ exports.dashboard = async (req, res) => {
 //logs
 exports.logs = async (req, res) => {
   if (!req.auth.userId) {
-    return res.render("dashboardError")
+    return res.render("dashboardError", { message: "Access to Logs" })
   } else {
     try {
       const data = await Crudlogs.findAll({
