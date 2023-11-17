@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const userButton = document.getElementById("user-button")
       const authLinks = document.getElementById("auth-links")
-      const workspace = document.getElementById("work-space")
 
       Clerk.addListener(({ user }) => {
         authLinks.style.display = user ? "none" : "block"
@@ -27,9 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         usernameDisplay.textContent = Clerk.user.firstName
 
         userButton.appendChild(usernameDisplay)
-        if (workspace) {
-          workspace.style.display = "inline"
-        }
       }
     } catch (err) {
       console.error("Error starting Clerk: ", err)
