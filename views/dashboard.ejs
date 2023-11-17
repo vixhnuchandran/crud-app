@@ -73,10 +73,36 @@
           }
         }
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("pre-loader")
+        window.addEventListener("beforeunload", () => {
+          loader.style.display = "block"
+        })
+      })
     </script>
   </head>
   <body>
     <%- include('include/_navbar.ejs') %>
+    <div
+      id="pre-loader"
+      class="fixed hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+    >
+      <div class="lds-spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
 
     <div id="main" class="mx-10">
       <div class="px-4 sm:px-6 lg:px-8">

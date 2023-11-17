@@ -73,6 +73,12 @@
           }
         }
       }
+      document.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("pre-loader")
+        window.addEventListener("beforeunload", () => {
+          loader.style.display = "block"
+        })
+      })
     </script>
   </head>
   <body>

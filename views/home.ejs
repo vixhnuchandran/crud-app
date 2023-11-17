@@ -32,9 +32,19 @@
       href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
       rel="stylesheet"
     />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("pre-loader")
+        window.addEventListener("beforeunload", () => {
+          loader.style.display = "block"
+        })
+      })
+    </script>
   </head>
+
   <body class="">
     <%- include('include/_navbar.ejs') %>
+
     <div class="">
       <div class="relative isolate px-6 pt-4 lg:px-8">
         <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
