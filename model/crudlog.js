@@ -22,7 +22,7 @@ const Crudlogs = sequelize.define(
     },
     timestamp: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW(),
+      defaultValue: DataTypes.NOW,
     },
   },
   { freezeTableName: true, timestamps: false }
