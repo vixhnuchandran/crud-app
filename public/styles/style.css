@@ -622,3 +622,15 @@ video {
     opacity: 0;
   }
 }
+
+.blur {
+  filter: blur(10px);
+}
+
+#main {
+  transition: filter 0.3s ease-in-out;
+}
+
+thead th.active {
+  color: purple;
+}
