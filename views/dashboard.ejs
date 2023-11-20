@@ -23,6 +23,8 @@
       href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
       rel="stylesheet"
     />
+    <!-- <link rel="stylesheet" href="/css/sortable.min.css" />
+    <script src="/js/sortable.min.js"></script> -->
     <script>
       function searchTable() {
         let input = document.getElementById("searchInput")
@@ -87,8 +89,11 @@
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
         const main = document.getElementById("main")
+        const overlay = document.getElementById("overlay")
 
         window.addEventListener("beforeunload", () => {
+          overlay.style.display = "block"
+
           loader.style.display = "block"
           main.classList.add("blur")
         })
@@ -96,6 +101,7 @@
         window.addEventListener("load", () => {
           loader.style.display = "none"
           main.classList.remove("blur")
+          overlay.style.display = "none"
         })
 
         const tableRows = document.querySelectorAll("tbody tr")
@@ -151,7 +157,7 @@
     <%- include('include/_navbar.ejs') %>
     <div
       id="pre-loader"
-      class="fixed hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+      class="absolute hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
     >
       <div class="lds-spinner">
         <div></div>
@@ -202,7 +208,7 @@
                 </div>
                 <button
                   onclick="resetTable()"
-                  class="mt-2 h-8 w-16 rounded-3xl font-semibold text-white bg-indigo-600 ml-3"
+                  class="mt-1 h-8 w-16 rounded-3xl font-semibold text-white bg-indigo-600 ml-3"
                 >
                   Clear
                 </button>
@@ -226,7 +232,7 @@
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
             >
-              <table class="min-w-full divide-y divide-gray-300">
+              <table class="min-w-full divide-y divide-gray-300 sortable">
                 <thead>
                   <tr>
                     <th
