@@ -16,75 +16,25 @@
     href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
     rel="stylesheet""stylesheet" />
     <script>
-      function resetTable() {
-        let input = document.getElementById("searchInput")
-        input.value = ""
-
-        let tableElement = document.querySelector("table")
-        let trElements = tableElement.getElementsByTagName("tr")
-
-        for (let i = 1; i < trElements.length; i++) {
-          trElements[i].style.display = ""
-        }
-      }
-      async function deleteUser(userId) {
-        const confirmed = confirm(
-          "Are you sure you want to delete this Student?"
-        )
-
-        if (confirmed) {
-          try {
-            const response = await fetch(`/dashboard/delete/${userId}`, {
-              method: "PATCH",
-            })
-            if (response.ok) {
-              window.location.reload()
-            }
-          } catch (error) {}
-        }
-      }
-
-      function searchTable() {
-        let input = document.getElementById("searchInput")
-        let toSearch = input.value.toLowerCase()
-        let tableElement = document.querySelector("table")
-        let trElements = tableElement.getElementsByTagName("tr")
-
-        for (let i = 1; i < trElements.length; i++) {
-          let toHide = false
-          let tdElements = trElements[i].getElementsByTagName("td")
-
-          for (let j = 1; j < tdElements.length; j++) {
-            if (tdElements[j]) {
-              let txtValue =
-                tdElements[j].textContent || tdElements[j].innerText
-
-              if (txtValue.toLowerCase().includes(toSearch)) {
-                toHide = true
-                break
-              }
-            }
-          }
-
-          if (toHide) {
-            trElements[i].style.display = ""
-          } else {
-            trElements[i].style.display = "none"
-          }
-        }
-      }
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
+        const main = document.getElementById("main")
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
+          main.classList.add("blur")
+        })
+
+        window.addEventListener("load", () => {
+          loader.style.display = "none"
+          main.classList.remove("blur")
         })
       })
     </script>
   </head>
   <body>
     <%- include('include/_navbar.ejs') %>
-    <div class="px-4 sm:px-6 lg:px-8 mx-10">
-      <h1 class="text-4xl text-center mt-5 font-semibold">ACCESS LOGS</h1>
+    <div class="px-4 sm:px-6 lg:px-8 mx-10" id="main">
+      <h1 class="text-4xl text-center mt-5 font-semibold">ACTION LOGS</h1>
 
       <div class="mt-8 flow-root border-2">
         <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

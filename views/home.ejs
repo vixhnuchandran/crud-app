@@ -35,17 +35,24 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
+        const main = document.getElementById("main")
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
+          main.classList.add("blur")
+        })
+
+        window.addEventListener("load", () => {
+          loader.style.display = "none"
+          main.classList.remove("blur")
         })
       })
     </script>
   </head>
 
-  <body class="">
+  <body>
     <%- include('include/_navbar.ejs') %>
 
-    <div class="">
+    <div id="main">
       <div class="relative isolate px-6 pt-4 lg:px-8">
         <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div class="text-center">

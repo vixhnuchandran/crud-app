@@ -13,39 +13,17 @@
       rel="stylesheet"
     />
     <link
-    href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
-    rel="stylesheet""stylesheet" />
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
+      rel="stylesheet"
+    />
     <script>
-      function resetTable() {
-        let input = document.getElementById("searchInput")
-        input.value = ""
-
-        let tableElement = document.querySelector("table")
-        let trElements = tableElement.getElementsByTagName("tr")
-
-        for (let i = 1; i < trElements.length; i++) {
-          trElements[i].style.display = ""
-        }
-      }
-      async function deleteUser(userId) {
-        const confirmed = confirm(
-          "Are you sure you want to delete this Student?"
-        )
-
-        if (confirmed) {
-          const loader = document.getElementById("pre-loader")
-          loader.style.display = "block"
-          try {
-            const response = await fetch(`/dashboard/delete/${userId}`, {
-              method: "PATCH",
-            })
-            if (response.ok) {
-              window.location.reload()
-            }
-          } catch (error) {}
-        }
-      }
-
       function searchTable() {
         let input = document.getElementById("searchInput")
         let toSearch = input.value.toLowerCase()
@@ -75,15 +53,97 @@
           }
         }
       }
+      function resetTable() {
+        let input = document.getElementById("searchInput")
+        input.value = ""
+
+        let tableElement = document.querySelector("table")
+        let trElements = tableElement.getElementsByTagName("tr")
+
+        for (let i = 1; i < trElements.length; i++) {
+          trElements[i].style.display = ""
+        }
+      }
+      async function deleteUser(userId) {
+        const confirmed = confirm(
+          "Are you sure you want to delete this Student?"
+        )
+        const loader = document.getElementById("pre-loader")
+        if (confirmed) {
+          loader.style.display = "block"
+          main.classList.add("blur")
+
+          try {
+            const response = await fetch(`/dashboard/delete/${userId}`, {
+              method: "PATCH",
+            })
+            if (response.ok) {
+              window.location.reload()
+            }
+          } catch (error) {}
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
+        const main = document.getElementById("main")
+
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
+          main.classList.add("blur")
         })
 
         window.addEventListener("load", () => {
-          loader.style.display = "hidden"
+          loader.style.display = "none"
+          main.classList.remove("blur")
         })
+
+        const tableRows = document.querySelectorAll("tbody tr")
+        const tableHeads = document.querySelectorAll("thead th")
+        const columnsToSort = [0, 2, 3]
+
+        tableHeads.forEach((head, i) => {
+          if (columnsToSort.includes(i)) {
+            let sortAsc = true
+            head.onclick = () => {
+              tableHeads.forEach(head => head.classList.remove("active"))
+              head.classList.add("active")
+
+              head.classList.toggle("asc", sortAsc)
+              sortAsc = head.classList.contains("asc") ? false : true
+
+              sortTable(i, sortAsc)
+            }
+          }
+        })
+
+        function sortTable(column, sortAsc) {
+          const soretedRows = [...tableRows]
+            .sort((a, b) => {
+              let firstRow = a
+                  .querySelectorAll("td")
+                  [column].textContent.toLowerCase(),
+                secondRow = b
+                  .querySelectorAll("td")
+                  [column].textContent.toLowerCase()
+
+              if (column === 0) {
+                firstRow = parseInt(firstRow, 10)
+                secondRow = parseInt(secondRow, 10)
+              }
+
+              return sortAsc
+                ? firstRow < secondRow
+                  ? 1
+                  : -1
+                : firstRow < secondRow
+                ? -1
+                : 1
+            })
+            .map(sortedRow =>
+              document.querySelector("tbody").appendChild(sortedRow)
+            )
+        }
       })
     </script>
   </head>
@@ -111,19 +171,11 @@
 
     <div id="main" class="mx-10">
       <div class="px-4 sm:px-6 lg:px-8">
-        <div class="sm:flex sm:items-center">
-          <div class="sm:flex-start mt-10">
-            <h1 class="text-base mt-5 font-semibold leading-6 text-gray-900">
-              Higher Secondary
-            </h1>
-            <p class="mt-2 text-sm text-gray-700">
-              Commerce Computer , batch 2023-24
-            </p>
-          </div>
-          <div class="flex justify-start items-start mx-9">
+        <div class="sm:flex sm:items-center mt-16">
+          <div class="flex justify-start items-between">
             <div class="item1">
-              <div class="ml-6 flex justify-start p-4">
-                <div class="relative mt-1">
+              <div class="flex justify-start my-autop-4">
+                <div class="relative mt-">
                   <div
                     class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                   >
@@ -158,7 +210,7 @@
             </div>
           </div>
           <div class="add flex justify-end ml-auto mr-10">
-            <div class="mt-4 sm:ml-16 sm:mt-0">
+            <div class="mt-4 sm:ml-16 sm:mt-0 my-auto">
               <a
                 href="/dashboard/create"
                 class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -179,50 +231,50 @@
                   <tr>
                     <th
                       scope="col"
-                      class="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
+                      class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
                     >
-                      ID
+                      ID &nbsp;<i class="fa-solid fa-sort"></i>
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       IMAGE
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      FIRSTNAME
+                      FIRSTNAME &nbsp;<i class="fa-solid fa-sort"></i>
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      LASTNAME
+                      LASTNAME &nbsp;<i class="fa-solid fa-sort"></i>
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       BIRTHDATE
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       CONTACT
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       ADDRESS
                     </th>
 
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
                       ACTION
                     </th>
