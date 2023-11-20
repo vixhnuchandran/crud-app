@@ -1,7 +1,3 @@
-Certainly! Here's a tailored description for your Student Management System CRUD application:
-
----
-
 # Student Management System CRUD Application
 
 Welcome to the Student Management System (SMS) CRUD application – a comprehensive solution built with Express.js, Vercel for seamless deployment, PostgreSQL for data storage, and EJS for efficient Server-Side Rendering (SSR). This application simplifies the process of managing student information, offering a range of CRUD functionalities.
