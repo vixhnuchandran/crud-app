@@ -3,7 +3,6 @@ const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
 const sharp = require("sharp")
 const { Clerk, clerkClient } = require("@clerk/clerk-sdk-node")
-const { use } = require("../routes/webRoutes")
 require("dotenv").config()
 
 const URL = process.env.BASE_URL
@@ -15,6 +14,9 @@ exports.dashboard = async (req, res) => {
     return res.render("dashboardError", { message: "Access to Dashboard" })
   } else {
     try {
+      const { page, limit } = req.query
+      console.log(page, limit)
+      const offset = (page - 1) * limit
       const data = await Students.findAll({
         where: { isRemoved: false },
         attributes: [
@@ -27,12 +29,14 @@ exports.dashboard = async (req, res) => {
           ["s_image_url", "imageurl"],
         ],
         order: [["s_id", "ASC"]],
+        limit: parseInt(limit) || 5,
+        offset: parseInt(offset) || 0,
       })
 
       const students = data.map(student => student.toJSON())
-      return res.render("dashboard", { students })
+      return res.render("dashboard", { students, page })
     } catch (error) {
-      console.log(error.stack)
+      res.render("error")
       return
     }
   }
