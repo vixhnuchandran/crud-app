@@ -92,13 +92,6 @@
         const pageLinks = document.querySelectorAll(".pageno")
         const currentUrl = window.location.href
         const urlParams = new URLSearchParams(currentUrl)
-
-        pageLinks.forEach(link => {
-          link.addEventListener("click", () => {
-            link.classList.add("bg-indigo-400")
-          })
-        })
-
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
           main.classList.add("blur")
@@ -107,6 +100,12 @@
         window.addEventListener("load", () => {
           loader.style.display = "none"
           main.classList.remove("blur")
+        })
+
+        pageLinks.forEach(link => {
+          link.addEventListener("click", () => {
+            link.classList.add("bg-indigo-400")
+          })
         })
       })
     </script>
@@ -138,8 +137,8 @@
         <div class="sm:flex sm:items-center mt-16">
           <div class="flex justify-start items-between">
             <div class="item1">
-              <div class="flex justify-start my-autop-4">
-                <div class="relative mt-">
+              <div class="flex justify-start my-auto">
+                <div class="relative">
                   <div
                     class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                   >
@@ -185,7 +184,7 @@
           </div>
         </div>
 
-        <div class="mt-8 flow-root">
+
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
@@ -350,9 +349,12 @@
                 class="isolate inline-flex -space-x-px rounded-md shadow-sm"
                 aria-label="Pagination"
               >
+                <% let nextPage, prevPage; const currPage = parseInt(page); if
+                (currPage >= 1 && currPage <= 5) { nextPage = currPage + 1;
+                prevPage = currPage - 1; } %>
                 <a
                   id="prevButton"
-                  href="#"
+                  href="<%= prevPage >= 1 ? '/dashboard?page=' + encodeURIComponent(prevPage.toString()) + '&limit=5' : '#' %>"
                   class="pageno relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 >
                   <span class="sr-only">Previous</span>
@@ -370,7 +372,7 @@
                   </svg>
                 </a>
                 <a
-                  href="/dashboard?page=1"
+                  href="/dashboard?page=1&limit=5"
                   aria-current="page"
                   class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                   >1</a
@@ -397,7 +399,7 @@
                 >
                 <a
                   id="nextButton"
-                  href="#"
+                  href="<%= nextPage <= 5 ? '/dashboard?page=' + encodeURIComponent(nextPage.toString()) + '&limit=5' : '#' %>"
                   class="pageno relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 >
                   <span class="sr-only">Next</span>
