@@ -23,8 +23,8 @@
       href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
       rel="stylesheet"
     />
-    <!-- <link rel="stylesheet" href="/css/sortable.min.css" />
-    <script src="/js/sortable.min.js"></script> -->
+    <link rel="stylesheet" href="/css/sortable.min.css" />
+    <script src="/js/sortable.js"></script>
     <script>
       function searchTable() {
         let input = document.getElementById("searchInput")
@@ -89,11 +89,17 @@
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
         const main = document.getElementById("main")
-        const overlay = document.getElementById("overlay")
+        const pageLinks = document.querySelectorAll(".pageno")
+        const currentUrl = window.location.href
+        const urlParams = new URLSearchParams(currentUrl)
+
+        pageLinks.forEach(link => {
+          link.addEventListener("click", () => {
+            link.classList.add("bg-indigo-400")
+          })
+        })
 
         window.addEventListener("beforeunload", () => {
-          overlay.style.display = "block"
-
           loader.style.display = "block"
           main.classList.add("blur")
         })
@@ -101,55 +107,7 @@
         window.addEventListener("load", () => {
           loader.style.display = "none"
           main.classList.remove("blur")
-          overlay.style.display = "none"
         })
-
-        const tableRows = document.querySelectorAll("tbody tr")
-        const tableHeads = document.querySelectorAll("thead th")
-        const columnsToSort = [0, 2, 3]
-
-        tableHeads.forEach((head, i) => {
-          if (columnsToSort.includes(i)) {
-            let sortAsc = true
-            head.onclick = () => {
-              tableHeads.forEach(head => head.classList.remove("active"))
-              head.classList.add("active")
-
-              head.classList.toggle("asc", sortAsc)
-              sortAsc = head.classList.contains("asc") ? false : true
-
-              sortTable(i, sortAsc)
-            }
-          }
-        })
-
-        function sortTable(column, sortAsc) {
-          const soretedRows = [...tableRows]
-            .sort((a, b) => {
-              let firstRow = a
-                  .querySelectorAll("td")
-                  [column].textContent.toLowerCase(),
-                secondRow = b
-                  .querySelectorAll("td")
-                  [column].textContent.toLowerCase()
-
-              if (column === 0) {
-                firstRow = parseInt(firstRow, 10)
-                secondRow = parseInt(secondRow, 10)
-              }
-
-              return sortAsc
-                ? firstRow < secondRow
-                  ? 1
-                  : -1
-                : firstRow < secondRow
-                ? -1
-                : 1
-            })
-            .map(sortedRow =>
-              document.querySelector("tbody").appendChild(sortedRow)
-            )
-        }
       })
     </script>
   </head>
@@ -237,13 +195,13 @@
                   <tr>
                     <th
                       scope="col"
-                      class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
+                      class="data-sort cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
                     >
-                      ID &nbsp;<i class="fa-solid fa-sort"></i>
+                      ID
                     </th>
                     <th
                       scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       IMAGE
                     </th>
@@ -251,36 +209,36 @@
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      FIRSTNAME &nbsp;<i class="fa-solid fa-sort"></i>
+                      FIRSTNAME
                     </th>
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      LASTNAME &nbsp;<i class="fa-solid fa-sort"></i>
+                      LASTNAME
                     </th>
                     <th
                       scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       BIRTHDATE
                     </th>
                     <th
                       scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       CONTACT
                     </th>
                     <th
                       scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       ADDRESS
                     </th>
 
                     <th
                       scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      class="no-sort cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
                       ACTION
                     </th>
@@ -370,6 +328,93 @@
                   <%} %>
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+        >
+          <div class="flex flex-1 justify-between sm:hidden"></div>
+          <div
+            class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+          >
+            <div>
+              <p class="text-sm text-gray-700">
+                Showing page
+                <span class="font-medium"> <%= page %> </span>
+                results
+              </p>
+            </div>
+            <div>
+              <nav
+                class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                aria-label="Pagination"
+              >
+                <a
+                  id="prevButton"
+                  href="#"
+                  class="pageno relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Previous</span>
+                  <svg
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="/dashboard?page=1"
+                  aria-current="page"
+                  class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >1</a
+                >
+                <a
+                  href="/dashboard?page=2&limit=5"
+                  class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >2</a
+                >
+                <a
+                  href="/dashboard?page=3&limit=5"
+                  class="pageno relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
+                  >3</a
+                >
+                <a
+                  href="/dashboard?page=4&limit=5"
+                  class="pageno relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
+                  >4</a
+                >
+                <a
+                  href="/dashboard?page=5&limit=5"
+                  class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >5</a
+                >
+                <a
+                  id="nextButton"
+                  href="#"
+                  class="pageno relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Next</span>
+                  <svg
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+              </nav>
             </div>
           </div>
         </div>
