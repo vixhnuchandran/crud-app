@@ -19,6 +19,12 @@ route.get("/dashboard/create/", ClerkExpressWithAuth({}), services.create)
 
 route.get("/dashboard/update/:sid", ClerkExpressWithAuth({}), services.update)
 
+route.get(
+  "/dashboard/marksheet/:sid",
+  ClerkExpressWithAuth({}),
+  services.marksheet
+)
+
 route.post(
   "/dashboard/create",
   ClerkExpressWithAuth({}),
