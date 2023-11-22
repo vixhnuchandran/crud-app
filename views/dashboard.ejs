@@ -335,20 +335,20 @@
           </div>
         </div>
       </div>
-    </div>
-    <div id="pagination" class="mx-auto text-center mb-20 space-x-3">
-      <% if (page > 1) { %>
-      <a class="selectedLink" href="/dashboard?page=<%= page - 1 %>"
-        >Previous</a
-      >
-      <% } %> <% for (let i = iterator; i <= endingLink; i++) { %> <% if (i ===
-      page) { %>
-      <a class="selectedLink" href="/dashboard?page=<%= i %>"><%= i %></a>
-      <% } else { %>
-      <a href="/dashboard?page=<%= i %>"><%= i %></a>
-      <% } %> <% } %> <% if (page < numOfPages) { %>
-      <a class="selectedLink" href="/dashboard?page=<%= page + 1 %>">Next</a>
-      <% } %>
+      <div id="pagination" class="mx-auto text-center mb-20 space-x-3">
+        <% if (page > 1) { %>
+        <a class="selectedLink" href="/dashboard?page=<%= page - 1 %>"
+          >Previous</a
+        >
+        <% } %> <% for (let i = iterator; i <= endingLink; i++) { %> <% if (i
+        === page) { %>
+        <a class="selectedLink" href="/dashboard?page=<%= i %>"><%= i %></a>
+        <% } else { %>
+        <a href="/dashboard?page=<%= i %>"><%= i %></a>
+        <% } %> <% } %> <% if (page < numOfPages) { %>
+        <a class="selectedLink" href="/dashboard?page=<%= page + 1 %>">Next</a>
+        <% } %>
+      </div>
     </div>
   </body>
 </html>
