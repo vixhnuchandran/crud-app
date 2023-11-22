@@ -1,6 +1,9 @@
 const { put } = require("@vercel/blob")
 const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
+const Marks = require("../model/marks")
+const calculateGradeAndGPA = require("../utils/utils")
+
 const sharp = require("sharp")
 const { Clerk, clerkClient } = require("@clerk/clerk-sdk-node")
 require("dotenv").config()
@@ -14,9 +17,32 @@ exports.dashboard = async (req, res) => {
     return res.render("dashboardError", { message: "Access to Dashboard" })
   } else {
     try {
-      const { page, limit } = req.query
-      console.log(page, limit)
-      const offset = (page - 1) * limit
+      const resultsPerPage = 7
+      const allData = await Students.findAll({
+        where: { isRemoved: false },
+        attributes: [
+          ["s_id", "studentId"],
+          ["s_firstname", "firstname"],
+          ["s_lastname", "lastname"],
+          ["s_birthdate", "birthdate"],
+          ["s_contactno", "contact"],
+          ["s_address", "address"],
+          ["s_image_url", "imageurl"],
+        ],
+        order: [["s_id", "ASC"]],
+      })
+
+      const numOfData = allData.length
+      const numOfPages = Math.ceil(numOfData / resultsPerPage)
+      let page = req.query.page ? Number(req.query.page) : 1
+      const startingLimit = (page - 1) * resultsPerPage
+
+      if (page > numOfPages) {
+        res.redirect("/dashboard?page=" + encodeURIComponent(numOfPages))
+      } else if (page < 1) {
+        res.redirect("/dashboard?page=" + encodeURIComponent("1"))
+      }
+
       const data = await Students.findAll({
         where: { isRemoved: false },
         attributes: [
@@ -29,16 +55,92 @@ exports.dashboard = async (req, res) => {
           ["s_image_url", "imageurl"],
         ],
         order: [["s_id", "ASC"]],
-        limit: parseInt(limit) || 5,
-        offset: parseInt(offset) || 0,
+        limit: resultsPerPage,
+        offset: startingLimit,
       })
 
+      let iterator = page - 5 < 1 ? 1 : page - 5
+      let endingLink =
+        iterator + 6 <= numOfPages ? iterator + 6 : page + (numOfPages - page)
+
+      if (endingLink < page + 4) {
+        iterator -= page + 4 - numOfPages
+      }
       const students = data.map(student => student.toJSON())
-      return res.render("dashboard", { students, page })
+      return res.render("dashboard", {
+        students,
+        page,
+        iterator,
+        endingLink,
+        numOfPages,
+      })
     } catch (error) {
-      res.render("error")
+      // res.render("error")
+      res.json(error.message)
       return
     }
+  }
+}
+
+// marsksheet
+exports.marksheet = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to Logs" })
+  } else {
+    const sid = req.params.sid
+    const data = await Students.findByPk(sid, {
+      include: [
+        {
+          model: Marks,
+          attributes: ["maths", "physics", "chemistry", "biology", "language"],
+        },
+      ],
+      attributes: [
+        ["s_id", "studentId"],
+        ["s_firstname", "firstname"],
+        ["s_lastname", "lastname"],
+        ["s_image_url", "image"],
+      ],
+    })
+    const studentMarks = data.toJSON()
+    console.log(studentMarks.students_mark.maths)
+
+    const mathsResult = calculateGradeAndGPA(studentMarks.students_mark.maths)
+    const physicsResult = calculateGradeAndGPA(
+      studentMarks.students_mark.physics
+    )
+    const chemistryResult = calculateGradeAndGPA(
+      studentMarks.students_mark.chemistry
+    )
+    const biologyResult = calculateGradeAndGPA(
+      studentMarks.students_mark.biology
+    )
+    const languageResult = calculateGradeAndGPA(
+      studentMarks.students_mark.lamgauge
+    )
+
+    const maths = { grade: mathsResult.grade, gpa: mathsResult.gpa }
+    const physics = { grade: physicsResult.grade, gpa: physicsResult.gpa }
+    const chemistry = { grade: chemistryResult.grade, gpa: chemistryResult.gpa }
+    const biology = { grade: biologyResult.grade, gpa: biologyResult.gpa }
+    const language = { grade: languageResult.grade, gpa: languageResult.gpa }
+
+    console.log(mathsResult.grade, mathsResult.gpa)
+    console.log(physicsResult.grade, physicsResult.gpa)
+    console.log(chemistryResult.grade, chemistryResult.gpa)
+    console.log(biologyResult.grade, biologyResult.gpa)
+    console.log(languageResult.grade, languageResult.gpa)
+
+    res
+      .status(200)
+      .render("marksheet", {
+        studentMarks,
+        maths,
+        physics,
+        chemistry,
+        biology,
+        language,
+      })
   }
 }
 
