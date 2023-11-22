@@ -23,8 +23,8 @@
       href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/sortable.min.css" />
-    <script src="/js/sortable.js"></script>
+    <!-- <link rel="stylesheet" href="/css/sortable.min.css" /> -->
+    <!-- <script src="/js/sortable.js"></script> -->
     <script>
       function searchTable() {
         let input = document.getElementById("searchInput")
@@ -33,8 +33,8 @@
         let trElements = tableElement.getElementsByTagName("tr")
 
         for (let i = 1; i < trElements.length; i++) {
-          let toHide = false
           let tdElements = trElements[i].getElementsByTagName("td")
+          let rowMatch = false
 
           for (let j = 1; j < tdElements.length; j++) {
             if (tdElements[j]) {
@@ -42,19 +42,16 @@
                 tdElements[j].textContent || tdElements[j].innerText
 
               if (txtValue.toLowerCase().includes(toSearch)) {
-                toHide = true
+                rowMatch = true
                 break
               }
             }
           }
 
-          if (toHide) {
-            trElements[i].style.display = ""
-          } else {
-            trElements[i].style.display = "none"
-          }
+          trElements[i].style.display = rowMatch ? "" : "none"
         }
       }
+
       function resetTable() {
         let input = document.getElementById("searchInput")
         input.value = ""
@@ -89,9 +86,8 @@
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
         const main = document.getElementById("main")
-        const pageLinks = document.querySelectorAll(".pageno")
-        const currentUrl = window.location.href
-        const urlParams = new URLSearchParams(currentUrl)
+        const overlay = document.getElementById("overlay")
+
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
           main.classList.add("blur")
@@ -100,12 +96,6 @@
         window.addEventListener("load", () => {
           loader.style.display = "none"
           main.classList.remove("blur")
-        })
-
-        pageLinks.forEach(link => {
-          link.addEventListener("click", () => {
-            link.classList.add("bg-indigo-400")
-          })
         })
       })
     </script>
@@ -137,7 +127,7 @@
         <div class="sm:flex sm:items-center mt-16">
           <div class="flex justify-start items-between">
             <div class="item1">
-              <div class="flex justify-start my-auto p-4">
+              <div class="flex justify-start my-autop-4">
                 <div class="relative mt-">
                   <div
                     class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -184,7 +174,7 @@
           </div>
         </div>
 
-        <div class="mt-2 flow-root">
+        <div class="mt-8 flow-root">
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
@@ -194,9 +184,9 @@
                   <tr>
                     <th
                       scope="col"
-                      class="data-sort cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
+                      class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
                     >
-                      ID
+                      ID &nbsp;
                     </th>
                     <th
                       scope="col"
@@ -208,13 +198,13 @@
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      FIRSTNAME
+                      FIRSTNAME &nbsp;
                     </th>
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      LASTNAME
+                      LASTNAME &nbsp;
                     </th>
                     <th
                       scope="col"
@@ -234,10 +224,15 @@
                     >
                       ADDRESS
                     </th>
-
                     <th
                       scope="col"
-                      class="no-sort cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                    >
+                      MARKSHEET
+                    </th>
+                    <th
+                      scope="col"
+                      class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
                       ACTION
                     </th>
@@ -309,6 +304,15 @@
                       </div>
                     </td>
                     <td
+                      class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
+                    >
+                      <a
+                        href="/dashboard/marksheet/<%= students[i].studentId %>"
+                        class="text-indigo-600 hover:text-indigo-900"
+                        >Marksheet</a
+                      >
+                    </td>
+                    <td
                       class="relative whitespace-nowrap py-5 pr-4 ml-8 text-left text-sm font-medium sm:pr-0 space-x-4"
                     >
                       <a
@@ -330,97 +334,21 @@
             </div>
           </div>
         </div>
-        <div
-          class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
-        >
-          <div class="flex flex-1 justify-between sm:hidden"></div>
-          <div
-            class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
-          >
-            <div>
-              <p class="text-sm text-gray-700">
-                Showing page
-                <span class="font-medium"> <%= page %> </span>
-                results
-              </p>
-            </div>
-            <div>
-              <nav
-                class="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                aria-label="Pagination"
-              >
-                <% let nextPage, prevPage; const currPage = parseInt(page); if
-                (currPage >= 1 && currPage <= 5) { nextPage = currPage + 1;
-                prevPage = currPage - 1; } %>
-                <a
-                  id="prevButton"
-                  href="<%= prevPage >= 1 ? '/dashboard?page=' + encodeURIComponent(prevPage.toString()) + '&limit=5' : '#' %>"
-                  class="pageno relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  <span class="sr-only">Previous</span>
-                  <svg
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </a>
-                <a
-                  href="/dashboard?page=1&limit=5"
-                  aria-current="page"
-                  class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                  >1</a
-                >
-                <a
-                  href="/dashboard?page=2&limit=5"
-                  class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                  >2</a
-                >
-                <a
-                  href="/dashboard?page=3&limit=5"
-                  class="pageno relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                  >3</a
-                >
-                <a
-                  href="/dashboard?page=4&limit=5"
-                  class="pageno relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                  >4</a
-                >
-                <a
-                  href="/dashboard?page=5&limit=5"
-                  class="pageno relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                  >5</a
-                >
-                <a
-                  id="nextButton"
-                  href="<%= nextPage <= 5 ? '/dashboard?page=' + encodeURIComponent(nextPage.toString()) + '&limit=5' : '#' %>"
-                  class="pageno relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  <span class="sr-only">Next</span>
-                  <svg
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </a>
-              </nav>
-            </div>
-          </div>
-        </div>
       </div>
+    </div>
+    <div id="pagination" class="mx-auto text-center mb-20 space-x-3">
+      <% if (page > 1) { %>
+      <a class="selectedLink" href="/dashboard?page=<%= page - 1 %>"
+        >Previous</a
+      >
+      <% } %> <% for (let i = iterator; i <= endingLink; i++) { %> <% if (i ===
+      page) { %>
+      <a class="selectedLink" href="/dashboard?page=<%= i %>"><%= i %></a>
+      <% } else { %>
+      <a href="/dashboard?page=<%= i %>"><%= i %></a>
+      <% } %> <% } %> <% if (page < numOfPages) { %>
+      <a class="selectedLink" href="/dashboard?page=<%= page + 1 %>">Next</a>
+      <% } %>
     </div>
   </body>
 </html>
