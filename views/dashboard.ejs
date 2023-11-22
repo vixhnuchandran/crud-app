@@ -26,32 +26,38 @@
     <!-- <link rel="stylesheet" href="/css/sortable.min.css" /> -->
     <!-- <script src="/js/sortable.js"></script> -->
     <script>
-      function searchTable() {
+      async function searchAndDisplay() {
         let input = document.getElementById("searchInput")
         let toSearch = input.value.toLowerCase()
-        let tableElement = document.querySelector("table")
-        let trElements = tableElement.getElementsByTagName("tr")
 
-        for (let i = 1; i < trElements.length; i++) {
-          let tdElements = trElements[i].getElementsByTagName("td")
-          let rowMatch = false
+        // Assuming your API endpoint for fetching filtered data
+        let apiUrl = `/api/filterData?search=${toSearch}`
 
-          for (let j = 1; j < tdElements.length; j++) {
-            if (tdElements[j]) {
-              let txtValue =
-                tdElements[j].textContent || tdElements[j].innerText
+        try {
+          const response = await fetch(apiUrl)
+          const data = await response.json()
 
-              if (txtValue.toLowerCase().includes(toSearch)) {
-                rowMatch = true
-                break
-              }
+          let tableElement = document.querySelector("table")
+          let tbody = tableElement.querySelector("tbody")
+          tbody.innerHTML = ""
+
+          data.forEach(item => {
+            let row = tbody.insertRow()
+            for (let key in item) {
+              let cell = row.insertCell()
+              cell.textContent = item[key]
             }
-          }
-
-          trElements[i].style.display = rowMatch ? "" : "none"
+          })
+        } catch (error) {
+          console.error("Error fetching filtered data:", error)
         }
       }
 
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          searchAndDisplay()
+        }
+      }
       function resetTable() {
         let input = document.getElementById("searchInput")
         input.value = ""
@@ -148,7 +154,7 @@
                   <input
                     type="text"
                     id="searchInput"
-                    onkeyup="searchTable()"
+                    onkeydown="handleKeyDown(event)"
                     class="bg-gray-50 border rounded-3xl border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-80 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Search..."
                   />
@@ -340,12 +346,15 @@
         <a class="selectedLink" href="/dashboard?page=<%= page - 1 %>"
           >Previous</a
         >
+        <a class="selectedLink" href="/dashboard?page=1%>">First</a>
         <% } %> <% for (let i = iterator; i <= endingLink; i++) { %> <% if (i
         === page) { %>
         <a class="selectedLink" href="/dashboard?page=<%= i %>"><%= i %></a>
         <% } else { %>
         <a href="/dashboard?page=<%= i %>"><%= i %></a>
         <% } %> <% } %> <% if (page < numOfPages) { %>
+        <a class="selectedLink" href="/dashboard?page=<%=numOfPages%>">Last</a>
+
         <a class="selectedLink" href="/dashboard?page=<%= page + 1 %>">Next</a>
         <% } %>
       </div>
