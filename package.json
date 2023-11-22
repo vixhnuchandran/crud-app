@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "npx nodemon app.js",
+    "start": "npx nodemon --trace-warnings app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
