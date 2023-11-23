@@ -39,4 +39,23 @@ const calculateGradeAndGPA = marksOutOf100 => {
   return { grade, gpa, percentage }
 }
 
-module.exports = calculateGradeAndGPA
+const calculateAge = dateOfBirth => {
+  const currentDate = new Date()
+
+  const dob = new Date(dateOfBirth)
+
+  const age = currentDate.getFullYear() - dob.getFullYear()
+
+  const hasBirthdayOccurred =
+    currentDate.getMonth() > dob.getMonth() ||
+    (currentDate.getMonth() === dob.getMonth() &&
+      currentDate.getDate() >= dob.getDate())
+
+  if (!hasBirthdayOccurred) {
+    return age - 1
+  }
+
+  return age
+}
+
+module.exports = { calculateGradeAndGPA, calculateAge }
