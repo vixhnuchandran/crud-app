@@ -251,11 +251,13 @@
                 aria-labelledby="menu-button"
                 tabindex="-1"
                 id="dropdown-options"
+                href="/dashboard?sortby=id  "
               >
                 <a
                   href="/dashboard?sortby=id  "
                   class="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
+                  data-order="asc"
                   tabindex="-1"
                   id="menu-item-2"
                   >Id</a
@@ -264,6 +266,7 @@
                   href="/dashboard?sortby=firstname"
                   class="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
+                  data-order="asc"
                   tabindex="-1"
                   id="menu-item-0"
                   >Firstname</a
@@ -272,6 +275,7 @@
                   href="/dashboard?sortby=lastname "
                   class="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
+                  data-order="asc"
                   tabindex="-1"
                   id="menu-item-1"
                   >Lastname</a
@@ -280,14 +284,13 @@
                   href="/dashboard?sortby=email  "
                   class="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
+                  data-order="asc"
                   tabindex="-1"
                   id="menu-item-2"
                   >Email</a
                 >
               </div>
             </div>
-
-            <script></script>
 
             <div class="mt-4 sm:ml-16 sm:mt-0 my-auto">
               <a
@@ -312,32 +315,32 @@
                       scope="col"
                       class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
                     >
-                      ID &nbsp;
+                      Id &nbsp;
                     </th>
                     <th
                       scope="col"
                       class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      IMAGE
+                      Image
                     </th>
 
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      FIRSTNAME &nbsp;
+                      Firstname &nbsp;
                     </th>
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      LASTNAME &nbsp;
+                      Lastname &nbsp;
                     </th>
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      CLASS &nbsp;
+                      Class &nbsp;
                     </th>
                     <th
                       scope="col"
@@ -356,7 +359,7 @@
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      ACTION
+                      Actions
                     </th>
                   </tr>
                 </thead>
