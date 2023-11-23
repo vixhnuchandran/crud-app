@@ -23,30 +23,81 @@
       href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
       rel="stylesheet"
     />
-    <!-- <link rel="stylesheet" href="/css/sortable.min.css" /> -->
-    <!-- <script src="/js/sortable.js"></script> -->
-    <script>
-      async function searchAndDisplay() {
-        let input = document.getElementById("searchInput")
-        let toSearch = input.value.toLowerCase()
 
-        // Assuming your API endpoint for fetching filtered data
-        let apiUrl = `/api/filterData?search=${toSearch}`
+    <script>
+      let input, toSearch
+      async function searchAndDisplay() {
+        input = document.getElementById("searchInput")
+        toSearch = input.value.trim().toLowerCase()
+
+        let apiUrl = `/api/v1/students?search=${toSearch}`
 
         try {
           const response = await fetch(apiUrl)
-          const data = await response.json()
-
+          const students = await response.json()
+          console.log(students)
           let tableElement = document.querySelector("table")
           let tbody = tableElement.querySelector("tbody")
+          const paginationElement = document.getElementById("pagination")
           tbody.innerHTML = ""
 
-          data.forEach(item => {
-            let row = tbody.insertRow()
-            for (let key in item) {
-              let cell = row.insertCell()
-              cell.textContent = item[key]
-            }
+          students.forEach(student => {
+            const row = document.createElement("tr")
+
+            const columns = [
+              {
+                class: "text-center py-5 pl-4 pr-3 text-sm sm:pl-0",
+                content: student.studentId,
+              },
+              {
+                class: "px-3 py-5 text-sm text-gray-500",
+                content: `<div class="h-11 w-11 flex-shrink-0 mx-auto">${
+                  student.imageurl
+                    ? `<img src="${student.imageurl}thumb" width="40" class="rounded-full" />`
+                    : '<img src="/img/null.png" width="40" class="mx-auto" />'
+                }</div>`,
+              },
+              {
+                class: "text-center px-3 py-5 text-sm text-gray-500",
+                content: `<div class="text-gray-900">${student.class}</div>`,
+              },
+              {
+                class: "text-center px-3 py-5 text-sm text-gray-500",
+                content: `<div class="text-gray-900">${student.firstname}</div>`,
+              },
+              {
+                class: "text-center px-3 py-5 text-sm text-gray-500",
+                content: `<div class="text-gray-900">${student.lastname}</div>`,
+              },
+              {
+                class: "text-center py-5 text-sm text-gray-500",
+                content: `<div class="text-gray-900">${student.email}</div>`,
+              },
+              {
+                class: "text-center px-3 py-5 text-sm text-gray-500",
+                content: `<div class="text-gray-900">${student.birthdate
+                  .split("-")
+                  .reverse()
+                  .join("-")}</div>`,
+              },
+              {
+                class:
+                  "relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4",
+                content: `<a href="/dashboard/view/${student.studentId}" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-eye" style="color: #3940fe"></i></a><a href="/dashboard/update/${student.studentId}" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-pen-to-square" style="color: #01c632"></i></a><button onclick="deleteUser('${student.studentId}')" class="text-indigo-600 hover:text-indigo-900"><i class="fa-sharp fa-solid fa-trash" style="color: #ff0000"></i></button>`,
+              },
+            ]
+
+            columns.forEach(column => {
+              const cell = document.createElement("td")
+              cell.className = column.class
+              cell.innerHTML = column.content
+              row.appendChild(cell)
+            })
+
+            tbody.appendChild(row)
+
+            tableElement.appendChild(tbody)
+            paginationElement.style.display = "none"
           })
         } catch (error) {
           console.error("Error fetching filtered data:", error)
@@ -56,19 +107,10 @@
       function handleKeyPress(event) {
         if (event.key === "Enter") {
           searchAndDisplay()
+          console.log(toSearch)
         }
       }
-      function resetTable() {
-        let input = document.getElementById("searchInput")
-        input.value = ""
 
-        let tableElement = document.querySelector("table")
-        let trElements = tableElement.getElementsByTagName("tr")
-
-        for (let i = 1; i < trElements.length; i++) {
-          trElements[i].style.display = ""
-        }
-      }
       async function deleteUser(userId) {
         const confirmed = confirm(
           "Are you sure you want to delete this Student?"
@@ -103,6 +145,12 @@
           loader.style.display = "none"
           main.classList.remove("blur")
         })
+        document
+          .getElementById("menu-button")
+          .addEventListener("click", function () {
+            const dropdownOptions = document.getElementById("dropdown-options")
+            dropdownOptions.classList.toggle("hidden")
+          })
       })
     </script>
   </head>
@@ -130,7 +178,7 @@
 
     <div id="main" class="mx-10">
       <div class="px-4 sm:px-6 lg:px-8">
-        <div class="sm:flex sm:items-center mt-16">
+        <div class="sm:flex sm:items-center mt-3">
           <div class="flex justify-start items-between">
             <div class="item1">
               <div class="flex justify-start my-autop-4">
@@ -154,21 +202,88 @@
                   <input
                     type="text"
                     id="searchInput"
-                    onkeydown="handleKeyDown(event)"
+                    onkeydown="handleKeyPress(event)"
                     class="bg-gray-50 border rounded-3xl border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-80 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Search..."
+                    placeholder="Type and press ENTER..."
                   />
                 </div>
-                <button
-                  onclick="resetTable()"
-                  class="mt-1 h-8 w-16 rounded-3xl font-semibold text-white bg-indigo-600 ml-3"
+                <a
+                  href="/dashboard"
+                  class="h-8 my-auto text-center w-16 rounded-3xl font-semibold text-white bg-indigo-600 ml-3 flex items-center justify-center"
                 >
                   Clear
-                </button>
+                </a>
               </div>
             </div>
           </div>
           <div class="add flex justify-end ml-auto mr-10">
+            <div class="relative inline-block text-left">
+              <button
+                type="button"
+                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                id="menu-button"
+                aria-haspopup="true"
+              >
+                Sort by
+                <svg
+                  class="-mr-1 h-5 w-5 text-gray-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <div
+                class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 hidden"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="menu-button"
+                tabindex="-1"
+                id="dropdown-options"
+              >
+                <a
+                  href="/dashboard?sortby=id  "
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-2"
+                  >Id</a
+                >
+                <a
+                  href="/dashboard?sortby=firstname"
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                  >Firstname</a
+                >
+                <a
+                  href="/dashboard?sortby=lastname "
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-1"
+                  >Lastname</a
+                >
+                <a
+                  href="/dashboard?sortby=email  "
+                  class="block px-4 py-2 text-sm text-gray-700"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-2"
+                  >Email</a
+                >
+              </div>
+            </div>
+
+            <script></script>
+
             <div class="mt-4 sm:ml-16 sm:mt-0 my-auto">
               <a
                 href="/dashboard/create"
@@ -180,7 +295,7 @@
           </div>
         </div>
 
-        <div class="mt-8 flow-root">
+        <div class="mt-8 flow-root border-2">
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
@@ -200,6 +315,7 @@
                     >
                       IMAGE
                     </th>
+
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
@@ -214,28 +330,23 @@
                     </th>
                     <th
                       scope="col"
-                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      BIRTHDATE
+                      CLASS &nbsp;
                     </th>
                     <th
                       scope="col"
                       class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      CONTACT
+                      Email &nbsp;
                     </th>
                     <th
                       scope="col"
                       class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
-                      ADDRESS
+                      Birthdate
                     </th>
-                    <th
-                      scope="col"
-                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      MARKSHEET
-                    </th>
+
                     <th
                       scope="col"
                       class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -251,28 +362,29 @@
                       class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0"
                     >
                       <div class="text-gray-900">
-                        <span
-                          class="inline-flex text-center items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
-                          ><%= students[i].studentId %></span
-                        >
+                        <%= students[i].studentId %>
                       </div>
                     </td>
                     <td
                       class="whitespace-nowrap px-3 py-5 text-sm text-gray-500"
                     >
                       <div class="h-11 w-11 flex-shrink-0 mx-auto">
-                        <% if (students[i].imageurl) { %>
+                        <!-- <% if (students[i].imageurl) { %>
                         <img
-                          src="<%=
-                        students[i].imageurl.replace(students[i].firstname,'thumb'+ students[i].firstname) %>"
+                          src="<%= students[i].imageurl+'thumb' %>"
                           width="40"
                           class="rounded-full"
                         />
-                        <% } else { %>
-                        <img src="/img/null.png" width="40" class="mx-auto" />
-                        <% } %>
+                        <% } else { %> -->
+                        <img
+                          src="/img/null.png"
+                          width="40"
+                          class="mx-auto rounded-full"
+                        />
+                        <!-- <% } %> -->
                       </div>
                     </td>
+
                     <td
                       class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
                     >
@@ -290,47 +402,46 @@
                     <td
                       class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
                     >
+                      <div class="text-gray-900"><%= students[i].class %></div>
+                    </td>
+                    <td
+                      class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
+                    >
+                      <div class="text-gray-900"><%= students[i].email %></div>
+                    </td>
+
+                    <td
+                      class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
+                    >
                       <div class="text-gray-900">
                         <%= students[i].birthdate.split('-').reverse().join('-')
                         %>
                       </div>
                     </td>
                     <td
-                      class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
-                    >
-                      <div class="text-gray-900">
-                        <%= students[i].contact %>
-                      </div>
-                    </td>
-                    <td
-                      class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
-                    >
-                      <div class="text-gray-900">
-                        <%= students[i].address %>
-                      </div>
-                    </td>
-                    <td
-                      class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
+                      class="relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4"
                     >
                       <a
-                        href="/dashboard/marksheet/<%= students[i].studentId %>"
+                        href="/dashboard/view/<%= students[i].studentId %>"
                         class="text-indigo-600 hover:text-indigo-900"
-                        >Marksheet</a
-                      >
-                    </td>
-                    <td
-                      class="relative whitespace-nowrap py-5 pr-4 ml-8 text-left text-sm font-medium sm:pr-0 space-x-4"
-                    >
+                        ><i class="fa-solid fa-eye" style="color: #3940fe"></i
+                      ></a>
                       <a
                         href="/dashboard/update/<%= students[i].studentId %>"
                         class="text-indigo-600 hover:text-indigo-900"
-                        >Edit</a
-                      >
+                        ><i
+                          class="fa-solid fa-pen-to-square"
+                          style="color: #01c632"
+                        ></i
+                      ></a>
                       <button
                         onclick="deleteUser('<%= students[i].studentId %>')"
                         class="text-indigo-600 hover:text-indigo-900"
                       >
-                        Delete
+                        <i
+                          class="fa-sharp fa-solid fa-trash"
+                          style="color: #ff0000"
+                        ></i>
                       </button>
                     </td>
                   </tr>
@@ -341,21 +452,37 @@
           </div>
         </div>
       </div>
-      <div id="pagination" class="mx-auto text-center mb-20 space-x-3">
+
+      <div id="pagination" class="mx-auto text-center mt-10 mb-20 space-x-3">
         <% if (page > 1) { %>
-        <a class="selectedLink" href="/dashboard?page=<%= page - 1 %>"
+        <a class="selectedLink" href="/dashboard?page=1&sortby=<%= sortby %>"
+          >First</a
+        >
+        <a
+          class="selectedLink"
+          href="/dashboard?page=<%= page - 1 %>&sortby=<%= sortby %>"
           >Previous</a
         >
-        <a class="selectedLink" href="/dashboard?page=1%>">First</a>
         <% } %> <% for (let i = iterator; i <= endingLink; i++) { %> <% if (i
         === page) { %>
-        <a class="selectedLink" href="/dashboard?page=<%= i %>"><%= i %></a>
+        <visited
+          class="selectedLink"
+          href="/dashboard?page=<%= i %>&sortby=<%= sortby %>"
+          ><%= i %>
+        </visited>
         <% } else { %>
-        <a href="/dashboard?page=<%= i %>"><%= i %></a>
+        <a href="/dashboard?page=<%= i %>&sortby=<%= sortby %>"><%= i %></a>
         <% } %> <% } %> <% if (page < numOfPages) { %>
-        <a class="selectedLink" href="/dashboard?page=<%=numOfPages%>">Last</a>
-
-        <a class="selectedLink" href="/dashboard?page=<%= page + 1 %>">Next</a>
+        <a
+          class="selectedLink"
+          href="/dashboard?page=<%= page + 1 %>&sortby=<%= sortby %>"
+          >Next</a
+        >
+        <a
+          class="selectedLink"
+          href="/dashboard?page=<%= numOfPages %>&sortby=<%= sortby %>"
+          >Last</a
+        >
         <% } %>
       </div>
     </div>
