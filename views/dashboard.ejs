@@ -35,7 +35,6 @@
         try {
           const response = await fetch(apiUrl)
           const students = await response.json()
-          console.log(students)
           let tableElement = document.querySelector("table")
           let tbody = tableElement.querySelector("tbody")
           const paginationElement = document.getElementById("pagination")
@@ -105,9 +104,15 @@
       }
 
       function handleKeyPress(event) {
+        const loader = document.getElementById("pre-loader")
+
         if (event.key === "Enter") {
-          searchAndDisplay()
-          console.log(toSearch)
+          loader.style.display = "block"
+          main.classList.add("blur")
+          searchAndDisplay().then(() => {
+            loader.style.display = "none"
+            main.classList.remove("blur")
+          })
         }
       }
 
