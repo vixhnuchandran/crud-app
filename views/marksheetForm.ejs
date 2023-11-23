@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SB-SMS</title>
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link type="text/css" rel="stylesheet" href="/css/style.css" />
+    <script src="/js/index.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&amp;display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      updateInputBorders()
+
+      const loader = document.getElementById("pre-loader")
+      window.addEventListener("beforeunload", () => {
+        loader.style.display = "block"
+      })
+
+      window.addEventListener("load", () => {
+        loader.style.display = "none"
+        attachInputListeners()
+      })
+    })
+
+    function validateForm() {
+      var maths = document.getElementById("maths").value
+      var physics = document.getElementById("physics").value
+      var chemistry = document.getElementById("chemistry").value
+      var biology = document.getElementById("biology").value
+      var language = document.getElementById("language").value
+
+      if (
+        maths === "" ||
+        physics === "" ||
+        chemistry === "" ||
+        biology === "" ||
+        language === ""
+      ) {
+        alert("Please fill in all fields.")
+        return false
+      }
+
+      return true
+    }
+    function updateInputBorders() {
+      const inputs = document.querySelectorAll(".form-input")
+
+      inputs.forEach(i => {
+        i.classList.toggle("border-green-500", i.value.trim() !== "")
+      })
+    }
+
+    function attachInputListeners() {
+      const inputs = document.querySelectorAll(".form-input")
+      inputs.forEach(input => {
+        input.addEventListener("input", updateInputBorders)
+      })
+    }
+  </script>
+  <body>
+    <%- include('include/_navbar.ejs') %>
+    <h1 class="text-4xl text-center font-medium my-10"></h1>
+
+    <div id="flex-container" class="flex items-center justify-center h-screen">
+      <div id="flex-item" class="mb-auto p-6 border-2">
+        <form
+          class="w-full max-w-lg"
+          action=""
+          method="POST"
+          enctype="application/x-www-form-urlencoded"
+          onsubmit="return validateForm()"
+        >
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="maths"
+                >Maths</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                id="maths"
+                type="number"
+                minlength="1"
+                maxlength="3"
+                min="0"
+                max="100"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                name="maths"
+              />
+              <p class="form-warning text-red-500 text-xs italic">
+                Out of 100.
+              </p>
+            </div>
+
+            <div class="w-full md:w-1/2 px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="physics"
+                >Physics</label
+              >
+
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                id="physics"
+                type="number"
+                minlength="1"
+                maxlength="3"
+                min="0"
+                max="100"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                name="physics"
+              />
+              <p class="form-warning text-red-500 text-xs italic">
+                Out of 100.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="chemistry"
+                >Chemistry</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                id="chemistry"
+                type="number"
+                minlength="1"
+                maxlength="3"
+                min="0"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                max="100"
+                name="chemistry"
+              />
+              <p class="form-warning text-red-500 text-xs italic">
+                Out of 100.
+              </p>
+            </div>
+            <div class="w-full md:w-1/2 px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="biology"
+                >Biology</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                id="biology"
+                type="number"
+                minlength="1"
+                maxlength="3"
+                min="0"
+                max="100"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                name="biology"
+              />
+              <p class="form-warning text-red-500 text-xs italic">
+                Out of 100.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="language"
+                >Language</label
+              >
+              <input
+                class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                id="language"
+                type="number"
+                minlength="1"
+                maxlength="3"
+                min="0"
+                max="100"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                name="language"
+              />
+              <p class="form-warning text-red-500 text-xs italic">
+                Out of 100.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex justify-center space-x-5 mt-5 mx-auto">
+            <div>
+              <a
+                href="/dashboard"
+                class="inline-flex items-center gap-x-2 rounded-md bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                <svg
+                  class="-ml-0.5 h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm4.95-11.364a1 1 0 00-1.415-1.414L10 8.586l-3.536-3.536a1 1 0 00-1.415 1.414L8.586 10l-3.536 3.536a1 1 0 101.415 1.414L10 11.414l3.536 3.536a1 1 0 001.415-1.414L11.414 10l3.536-3.536z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Cancel
+              </a>
+            </div>
+            <div>
+              <button
+                type="submit"
+                class="inline-flex items-center gap-x-2 rounded-md bg-green-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                <svg
+                  class="-ml-0.5 h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Create
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
