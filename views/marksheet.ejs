@@ -22,8 +22,17 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("pre-loader")
+        const main = document.getElementById("main")
+        const overlay = document.getElementById("overlay")
+
         window.addEventListener("beforeunload", () => {
           loader.style.display = "block"
+          main.classList.add("blur")
+        })
+
+        window.addEventListener("load", () => {
+          loader.style.display = "none"
+          main.classList.remove("blur")
         })
       })
     </script>
