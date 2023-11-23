@@ -19,12 +19,43 @@ route.get("/dashboard/create/", ClerkExpressWithAuth({}), services.create)
 
 route.get("/dashboard/update/:sid", ClerkExpressWithAuth({}), services.update)
 
+route.get("/dashboard/view/:sid", ClerkExpressWithAuth({}), services.view)
+
+route.get(
+  "/dashboard/contact/:sid",
+  ClerkExpressWithAuth({}),
+  services.contactInfo
+)
+
+route.get(
+  "/dashboard/student/:sid",
+  ClerkExpressWithAuth({}),
+  services.studentInfo
+)
+
+// route.get(
+//   "/dashboard/marksheet/update/:sid",
+//   ClerkExpressWithAuth({}),
+//   services.upadteMarksheet
+// )
+
 route.get(
   "/dashboard/marksheet/:sid",
   ClerkExpressWithAuth({}),
   services.marksheet
 )
 
+route.get(
+  "/dashboard/marksheet/create/:sid",
+  ClerkExpressWithAuth({}),
+  services.createMarksheet
+)
+
+route.post(
+  "/dashboard/marksheet/create/:sid",
+  ClerkExpressWithAuth({}),
+  services.createNewMarksheet
+)
 route.post(
   "/dashboard/create",
   ClerkExpressWithAuth({}),
