@@ -19,16 +19,9 @@
   </head>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      updateInputBorders()
-
       const loader = document.getElementById("pre-loader")
       window.addEventListener("beforeunload", () => {
         loader.style.display = "block"
-      })
-
-      window.addEventListener("load", () => {
-        loader.style.display = "none"
-        attachInputListeners()
       })
     })
 
