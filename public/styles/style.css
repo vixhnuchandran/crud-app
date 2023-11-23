@@ -649,16 +649,17 @@ thead th.active {
 
 .selectedLink {
   color: royalblue;
-  text-decoration: underline;
 }
 
 .break {
   margin: 50px 0;
 }
 
-a:link,
-a:visited,
-a:hover,
-a:active {
-  text-decoration: none;
+nav a.active {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+#dropdown-options a:hover {
+  background-color: #c3c2c2;
 }
