@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMS</title>
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link type="text/css" rel="stylesheet" href="/css/style.css" />
+    <script src="/js/index.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("pre-loader")
+        window.addEventListener("beforeunload", () => {
+          loader.style.display = "block"
+        })
+      })
+    </script>
+  </head>
+  <body>
+    <%- include('include/_navbar.ejs') %>
+    <div id="main" class="flex flex-col justify-between">
+      <div id="top"></div>
+      <div
+        id="current-image"
+        class="flex items-center justify-center space-x-4 my-10"
+      >
+        <% if (studentData.imageurl) { %>
+        <img
+          src="<%= studentData.imageurl
+        %>"
+          alt="profile-image"
+          width="100"
+          class="rounded-full"
+        />
+        <%} else { %>
+        <img src="/img/null.png" alt="profile-image" width="100" class="" /> <%}
+        %>
+        <div id="name">
+          <h1 class="text-5xl text-center font-medium">
+            <%= studentData.firstname + " " + studentData.lastname %>
+          </h1>
+        </div>
+      </div>
+      <div id="bottom">
+        <header class="flex items-center w-full bg-white dark:bg-dark">
+          <div class="container mx-auto">
+            <div class="relative flex justify-center items-center -mx-4">
+              <div>
+                <button
+                  id="navbarToggler"
+                  class="absolute right-4 top-1/2 block -translate-y-1/2 rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden"
+                ></button>
+                <header
+                  class="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white text-sm py-4 dark:bg-gray-800"
+                >
+                  <nav
+                    class="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between"
+                    aria-label="Global"
+                  >
+                    <div
+                      id="navbar-alignment"
+                      class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block"
+                    >
+                      <div
+                        class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:mt-0 sm:ps-5"
+                      >
+                        <a
+                          href="/dashboard/view/<%=studentData.studentId %>"
+                          class="font-medium text-blue-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                          aria-current="page"
+                          ><i
+                            class="fa-solid fa-user"
+                            style="color: #0041b3"
+                          ></i>
+                          &nbsp; Personal Info
+                        </a>
+                        <a
+                          class="font-medium text-blue-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                          href="/dashboard/contact/<%=studentData.studentId %>"
+                          aria-current="page"
+                          ><i
+                            class="fa-solid fa-address-book"
+                            style="color: #0040ad"
+                          ></i>
+                          &nbsp;Contact Info</a
+                        >
+                        <a
+                          class="font-medium text-blue-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                          href="/dashboard/student/<%=studentData.studentId %>"
+                          aria-current="page"
+                          ><i
+                            class="fa-solid fa-address-card"
+                            style="color: #003ea8"
+                          ></i>
+                          &nbsp;Student Info</a
+                        >
+                        <visited
+                          class="font-medium text-black-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                          ><i
+                            class="fa-solid fa-marker"
+                            style="color: #0043b8"
+                          ></i>
+                          &nbsp;Marksheet</visited
+                        >
+                      </div>
+                    </div>
+                  </nav>
+                </header>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+    </div>
+    <div
+      id="create-marksheet"
+      class="flex justify-center items-center mt-8 space-y-5"
+    >
+      <div>
+        <h2 class="text-center">Marksheet not found!</h2>
+        <a
+          href="/dashboard/marksheet/create/<%= studentData.studentId %>"
+          class="inline-flex mt-6 items-center gap-x-2 rounded-md bg-green-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+
+          Create Marksheet
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
