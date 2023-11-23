@@ -1,8 +1,8 @@
-const { put } = require("@vercel/blob")
+const { put, del } = require("@vercel/blob")
 const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
 const Marks = require("../model/marks")
-const calculateGradeAndGPA = require("../utils/utils")
+const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
 
 const sharp = require("sharp")
 const { Clerk, clerkClient } = require("@clerk/clerk-sdk-node")
@@ -10,6 +10,96 @@ require("dotenv").config()
 
 const URL = process.env.BASE_URL
 const clerk = Clerk({ secretKey: process.env.CLERK_SECRET_KEY })
+
+//
+// contact info page
+exports.contactInfo = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to View" })
+  } else {
+    try {
+      const sid = req.params.sid
+      let studentData = await Students.findByPk(sid, {
+        attributes: [
+          ["s_id", "studentId"],
+          ["s_firstname", "firstname"],
+          ["s_lastname", "lastname"],
+          ["s_emailid", "email"],
+          ["s_contactno", "contact"],
+          ["s_address", "address"],
+          ["s_image_url", "imageurl"],
+        ],
+      })
+      studentData = studentData.toJSON()
+
+      return res.status(200).render("contact", {
+        studentData,
+      })
+    } catch (error) {
+      return res.status(200).render("error")
+    }
+  }
+}
+
+//
+// student info page
+exports.studentInfo = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to View" })
+  } else {
+    try {
+      const sid = req.params.sid
+      let studentData = await Students.findByPk(sid, {
+        attributes: [
+          ["s_id", "studentId"],
+          ["s_firstname", "firstname"],
+          ["s_lastname", "lastname"],
+          ["s_class", "class"],
+          ["s_image_url", "imageurl"],
+        ],
+      })
+      studentData = studentData.toJSON()
+
+      return res.status(200).render("student", {
+        studentData,
+      })
+    } catch (error) {
+      return res.status(200).render("error")
+    }
+  }
+}
+
+// view + personal info
+exports.view = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to View" })
+  } else {
+    try {
+      const sid = req.params.sid
+      let studentData = await Students.findByPk(sid, {
+        attributes: [
+          ["s_id", "studentId"],
+          ["s_firstname", "firstname"],
+          ["s_lastname", "lastname"],
+          ["s_birthdate", "birthdate"],
+          ["s_gender", "gender"],
+          ["s_nationality", "nationality"],
+          ["s_image_url", "imageurl"],
+        ],
+      })
+      studentData = studentData.toJSON()
+
+      const age = calculateAge(studentData.birthdate)
+
+      return res.status(200).render("view", {
+        studentData,
+        age,
+      })
+    } catch (error) {
+      return res.status(200).render("error")
+    }
+  }
+}
 
 // dashboard
 exports.dashboard = async (req, res) => {
@@ -25,8 +115,8 @@ exports.dashboard = async (req, res) => {
           ["s_firstname", "firstname"],
           ["s_lastname", "lastname"],
           ["s_birthdate", "birthdate"],
-          ["s_contactno", "contact"],
-          ["s_address", "address"],
+          ["s_emailid", "email"],
+          ["s_class", "class"],
           ["s_image_url", "imageurl"],
         ],
         order: [["s_id", "ASC"]],
@@ -42,6 +132,19 @@ exports.dashboard = async (req, res) => {
       } else if (page < 1) {
         res.redirect("/dashboard?page=" + encodeURIComponent("1"))
       }
+      let sortby, tSortBy
+      sortby = req.query.sortby || "id"
+      if (sortby === "firstname") {
+        tSortBy = "s_firstname"
+      } else if (sortby === "lastname") {
+        tSortBy = "s_lastname"
+      } else if (sortby === "email") {
+        tSortBy = "s_emailid"
+      } else if (sortby === "id") {
+        tSortBy = "s_id"
+      } else {
+        tSortBy = "s_id"
+      }
 
       const data = await Students.findAll({
         where: { isRemoved: false },
@@ -50,24 +153,27 @@ exports.dashboard = async (req, res) => {
           ["s_firstname", "firstname"],
           ["s_lastname", "lastname"],
           ["s_birthdate", "birthdate"],
-          ["s_contactno", "contact"],
-          ["s_address", "address"],
+          ["s_emailid", "email"],
+          ["s_class", "class"],
           ["s_image_url", "imageurl"],
         ],
-        order: [["s_id", "ASC"]],
+        order: [[tSortBy, "ASC"]],
         limit: resultsPerPage,
         offset: startingLimit,
       })
+      let iterator, endingLink
 
-      let iterator = page - 5 < 1 ? 1 : page - 5
-      let endingLink =
-        iterator + 6 <= numOfPages ? iterator + 6 : page + (numOfPages - page)
-
-      if (endingLink < page + 4) {
-        iterator -= page + 4 - numOfPages
+      if (page === 1) {
+        iterator = page
+        endingLink = Math.min(numOfPages, iterator + 2)
+      } else {
+        iterator = Math.max(1, page - 2)
+        endingLink = Math.min(numOfPages, iterator + 4)
       }
+
       const students = data.map(student => student.toJSON())
       return res.render("dashboard", {
+        sortby,
         students,
         page,
         iterator,
@@ -82,65 +188,76 @@ exports.dashboard = async (req, res) => {
   }
 }
 
-// marsksheet
+//
+//
+// marksheet
 exports.marksheet = async (req, res) => {
   if (!req.auth.userId) {
-    return res.render("dashboardError", { message: "Access to Logs" })
+    return res.render("dashboardError", { message: "Access to Marsheet" })
   } else {
-    const sid = req.params.sid
-    const data = await Students.findByPk(sid, {
-      include: [
-        {
-          model: Marks,
-          attributes: ["maths", "physics", "chemistry", "biology", "language"],
-        },
-      ],
-      attributes: [
-        ["s_id", "studentId"],
-        ["s_firstname", "firstname"],
-        ["s_lastname", "lastname"],
-        ["s_image_url", "image"],
-      ],
-    })
-    const studentMarks = data.toJSON()
-    console.log(studentMarks.students_mark.maths)
+    try {
+      const sid = req.params.sid
+      const data = await Students.findByPk(sid, {
+        include: [
+          {
+            model: Marks,
+            attributes: [
+              "maths",
+              "physics",
+              "chemistry",
+              "biology",
+              "language",
+            ],
+          },
+        ],
+        attributes: [
+          ["s_id", "studentId"],
+          ["s_firstname", "firstname"],
+          ["s_lastname", "lastname"],
+          ["s_image_url", "imageurl"],
+        ],
+      })
+      const studentData = data.toJSON()
+      if (!studentData.students_mark) {
+        return res.status(404).render("createMarksheet", { studentData })
+      }
 
-    const mathsResult = calculateGradeAndGPA(studentMarks.students_mark.maths)
-    const physicsResult = calculateGradeAndGPA(
-      studentMarks.students_mark.physics
-    )
-    const chemistryResult = calculateGradeAndGPA(
-      studentMarks.students_mark.chemistry
-    )
-    const biologyResult = calculateGradeAndGPA(
-      studentMarks.students_mark.biology
-    )
-    const languageResult = calculateGradeAndGPA(
-      studentMarks.students_mark.lamgauge
-    )
+      const mathsResult = calculateGradeAndGPA(studentData.students_mark.maths)
+      const physicsResult = calculateGradeAndGPA(
+        studentData.students_mark.physics
+      )
+      const chemistryResult = calculateGradeAndGPA(
+        studentData.students_mark.chemistry
+      )
+      const biologyResult = calculateGradeAndGPA(
+        studentData.students_mark.biology
+      )
+      const languageResult = calculateGradeAndGPA(
+        studentData.students_mark.language
+      )
 
-    const maths = { grade: mathsResult.grade, gpa: mathsResult.gpa }
-    const physics = { grade: physicsResult.grade, gpa: physicsResult.gpa }
-    const chemistry = { grade: chemistryResult.grade, gpa: chemistryResult.gpa }
-    const biology = { grade: biologyResult.grade, gpa: biologyResult.gpa }
-    const language = { grade: languageResult.grade, gpa: languageResult.gpa }
+      const maths = { grade: mathsResult.grade, gpa: mathsResult.gpa }
+      const physics = { grade: physicsResult.grade, gpa: physicsResult.gpa }
+      const chemistry = {
+        grade: chemistryResult.grade,
+        gpa: chemistryResult.gpa,
+      }
+      const biology = { grade: biologyResult.grade, gpa: biologyResult.gpa }
+      const language = { grade: languageResult.grade, gpa: languageResult.gpa }
 
-    console.log(mathsResult.grade, mathsResult.gpa)
-    console.log(physicsResult.grade, physicsResult.gpa)
-    console.log(chemistryResult.grade, chemistryResult.gpa)
-    console.log(biologyResult.grade, biologyResult.gpa)
-    console.log(languageResult.grade, languageResult.gpa)
-
-    res
-      .status(200)
-      .render("marksheet", {
-        studentMarks,
+      return res.status(200).render("marksheet", {
+        studentData,
         maths,
         physics,
         chemistry,
         biology,
         language,
       })
+    } catch (error) {
+      // console.log(error.message)
+      return res.status(500).render("error")
+      return
+    }
   }
 }
 
@@ -165,11 +282,11 @@ exports.logs = async (req, res) => {
 
       return res.render("logs", { logs })
     } catch (error) {
-      console.log(error.stack)
       return
     }
   }
 }
+
 //
 // error page
 exports.error = (req, res) => {
@@ -195,6 +312,20 @@ exports.create = (req, res) => {
 }
 
 //
+//about page
+exports.createMarksheet = (req, res) => {
+  return res.render("marksheetForm")
+}
+
+// update marksheet form page
+// exports.upadteMarksheet = async (req, res) => {
+//   if (!req.auth.userId) {
+//     return res.render("error")
+//   } else {
+//   }
+// }
+
+//
 // update form page
 exports.update = async (req, res) => {
   if (!req.auth.userId) {
@@ -208,10 +339,14 @@ exports.update = async (req, res) => {
           where: { isRemoved: false },
           attributes: [
             ["s_id", "studentId"],
+            ["s_class", "class"],
             ["s_firstname", "firstname"],
             ["s_lastname", "lastname"],
             ["s_birthdate", "birthdate"],
+            ["s_gender", "gender"],
+            ["s_emailid", "email"],
             ["s_contactno", "contact"],
+            ["s_nationality", "nationality"],
             ["s_address", "address"],
             ["s_image_url", "imageurl"],
           ],
@@ -221,7 +356,6 @@ exports.update = async (req, res) => {
         return res.render("update", { heading: "Update Student", student })
       }
     } catch (err) {
-      console.log({ message: err.message })
       return
     }
   }
@@ -230,8 +364,30 @@ exports.update = async (req, res) => {
 async function toVercelBlob(name, buffer) {
   const options = { access: "public", addRandomSuffix: false }
   const blob = await put(name, buffer, options)
-  console.log(blob)
   return blob.url
+}
+
+//
+//
+// create new marksheet
+exports.createNewMarksheet = async (req, res) => {
+  if (!req.auth.userId || !req.body) {
+    return res.render("error")
+  } else {
+    const sid = req.params.sid
+    try {
+      const newStudentMarks = await Marks.create({
+        s_id: sid,
+        maths: req.body.maths,
+        physics: req.body.physics,
+        chemistry: req.body.chemistry,
+        biology: req.body.biology,
+        language: req.body.language,
+      })
+
+      return res.status(200).redirect(`/dashboard/marksheet/${sid}`)
+    } catch (error) {}
+  }
 }
 
 //
@@ -270,13 +426,16 @@ exports.createStudent = async (req, res) => {
       const thumbnailURL = await toVercelBlob("thumb" + fname, outBuffer)
     }
     const newStudent = await Students.create({
-      s_firstname: fname,
+      s_firstname: req.body.firstname.trim(),
       s_lastname: req.body.lastname.trim(),
       s_birthdate: req.body.birthdate,
       s_contactno: req.body.contact,
+      s_emailid: req.body.email,
+      s_gender: req.body.gender,
+      s_class: req.body.class,
+      s_nationality: req.body.nationality,
       s_address: req.body.address.trim(),
       s_image_url: imageURL,
-      updatedAt: new Date(),
     })
 
     res.redirect("/dashboard")
@@ -289,8 +448,6 @@ exports.createStudent = async (req, res) => {
     })
     return
   } catch (err) {
-    console.error(err)
-
     if (err.message.includes("Invalid file format")) {
       return res.status(400).json({
         error: "Invalid file format. Please upload a JPEG, JPG, or PNG file.",
@@ -318,8 +475,17 @@ exports.updateStudent = async (req, res) => {
       const birthdate = req.body.birthdate
       const phone = req.body.contact
       const address = req.body.address.trim()
+      const gender = req.body.gender
+      const classname = req.body.class
+      const nationality = req.body.nationality
+      const email = req.body.email
+      const imageurl = req.body.imageurl
 
       let imageURL = null
+      let thumbnailURL = imageurl.replace(
+        fname + lname,
+        fname + lname + "thumb"
+      )
       if (req.file) {
         const file = req.file
         const inputBuffer = file.buffer
@@ -337,11 +503,18 @@ exports.updateStudent = async (req, res) => {
           })
         }
 
-        imageURL = await toVercelBlob(fname, inputBuffer)
-        const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-        const thumbnailURL = await toVercelBlob("thumb" + fname, outBuffer)
+        // console.log(imageurl, thumbnailURL)
+        await del(imageurl).then(async () => {
+          await del(thumbnailURL).then(async () => {
+            imageURL = await toVercelBlob(fname + lname, inputBuffer)
+            const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+            thumbnailURL = await toVercelBlob(
+              fname + lname + "thumb",
+              outBuffer
+            )
+          })
+        })
       }
-
       if (fname !== undefined && fname !== null && fname !== "") {
         studentData.s_firstname = fname
       }
@@ -357,9 +530,26 @@ exports.updateStudent = async (req, res) => {
       if (address !== undefined && address !== null && address !== "") {
         studentData.s_address = address
       }
+      if (gender !== undefined && gender !== null && gender !== "") {
+        studentData.s_gender = gender
+      }
+      if (classname !== undefined && classname !== null && classname !== "") {
+        studentData.s_class = classname
+      }
+      if (
+        nationality !== undefined &&
+        nationality !== null &&
+        nationality !== ""
+      ) {
+        studentData.s_nationality = nationality
+      }
+      if (email !== undefined && email !== null && email !== "") {
+        studentData.s_emailid = email
+      }
       if (imageURL !== undefined && imageURL !== null && imageURL !== "") {
         studentData.s_image_url = imageURL
       }
+
       studentData.updatedAt = new Date()
       await Students.update(studentData, { where: { s_id: sid } })
 
@@ -372,7 +562,7 @@ exports.updateStudent = async (req, res) => {
       return
     }
   } catch (err) {
-    console.error(err)
+    // console.error(err)
     return res.render("error")
   }
 }
