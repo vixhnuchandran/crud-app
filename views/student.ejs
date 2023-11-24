@@ -30,33 +30,26 @@
   </head>
   <body>
     <%- include('include/_navbar.ejs') %>
-    <div id="main" class="flex flex-col justify-between">
+    <div id="main" class="flex flex-col justify-between mt-10">
       <div id="top"></div>
       <div
         id="current-image"
         class="flex items-center justify-center space-x-4 my-10"
       >
-        <%if (studentData.imageurl) { %><img
-          src="<%=studentData.imageurl%>"
-          alt="profile-image"
-          width="100"
-          class="rounded-full"
-        />
-        <%} else { %>
-        <img src="/img/null.png" alt="profile-image" width="100" class="" /> <%}
-        %>
+        <img src="/img/null.png" alt="profile-image" width="100" class="" />
+
         <div id="name">
           <h1 class="text-5xl text-center font-medium">
             <%= studentData.firstname + " " + studentData.lastname %>
           </h1>
         </div>
       </div>
-      <div id="bottom">
+      <div id="bottom" class="mx-60">
         <header
-          class="flex items-center justify-center w-full bg-white dark:bg-dark"
+          class="flex items-center w-full bg-white dark:bg-dark border-b-2"
         >
           <div class="container mx-auto">
-            <div class="relative flex justify-center items-center -mx-4">
+            <div class="relative flex justify-start items-center mx-4">
               <div>
                 <button
                   id="navbarToggler"
@@ -97,7 +90,7 @@
                           &nbsp;Contact Info</a
                         >
                         <visited
-                          class="font-medium text-black-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                          class="p-3 rounded-full bg-gray-200 font-medium text-black-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                           href="/dashboard/student/<%=studentData.studentId %>"
                           aria-current="page"
                           ><i
