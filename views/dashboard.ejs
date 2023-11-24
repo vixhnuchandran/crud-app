@@ -218,7 +218,7 @@
     </div>
 
     <div id="main" class="mx-10">
-      <div class="px-4 sm:px-6 lg:px-8">
+      <div class="">
         <div class="sm:flex sm:items-center mt-3">
           <div class="flex justify-start items-between">
             <div class="item1">
@@ -244,13 +244,13 @@
                     type="text"
                     id="searchInput"
                     onkeydown="handleKeyPress(event)"
-                    class="bg-gray-50 border rounded-3xl border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-80 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="bg-gray-50 border rounded-md border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-80 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Type and press ENTER..."
                   />
                 </div>
                 <a
                   href="/dashboard"
-                  class="h-8 my-auto text-center w-16 rounded-3xl font-semibold text-white bg-indigo-600 ml-3 flex items-center justify-center"
+                  class="h-8 my-auto text-center w-16 rounded-md font-semibold text-white bg-indigo-600 ml-3 flex items-center justify-center"
                 >
                   Reset
                 </a>
@@ -294,12 +294,7 @@
                   <input type="checkbox" name="id" class="form-checkbox" />
                   ID
                 </label>
-                <label
-                  class="block px-4 py-2 text-sm font-medium text-gray-700"
-                >
-                  <input type="checkbox" name="image" class="form-checkbox" />
-                  IMAGE
-                </label>
+
                 <label
                   class="block px-4 py-2 text-sm font-medium text-gray-700"
                 >
@@ -390,8 +385,7 @@
                       >ID &nbsp; <i class="fa-sharp fa-solid fa-sort"></i>
                     </a>
                   </th>
-                  <% } %> <% if (students.some(student => student.imageurl)) {
-                  %>
+                  <% } %>
 
                   <th
                     id="image-data"
@@ -401,8 +395,7 @@
                     IMAGE
                   </th>
 
-                  <% } %><% if (students.some(student => student.firstname)) {
-                  %>
+                  <% if (students.some(student => student.firstname)) { %>
 
                   <th
                     id="firstname-data"
@@ -496,14 +489,13 @@
                       <%= students[i].studentId %>
                     </div>
                   </td>
-                  <% } %> <% if (students.some(student => student.imageurl)) {
-                  %>
+                  <% } %>
                   <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                     <div class="h-11 w-11 flex-shrink-0 mx-auto">
                       <img src="/img/null.png" alt="" />
                     </div>
                   </td>
-                  <% } %> <% if(students[i].firstname) { %>
+                  <% if(students[i].firstname) { %>
                   <td
                     class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
                   >
@@ -544,27 +536,20 @@
                   <td
                     class="relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4"
                   >
-                    <a
-                      href="/dashboard/view/<%= students[i].studentId %>"
-                      class="text-indigo-600 hover:text-indigo-900"
-                      ><i class="fa-solid fa-eye" style="color: #3940fe"></i
+                    <a href="/dashboard/view/<%= students[i].studentId %>"
+                      ><i class="fa-solid fa-eye text-indigo-800"></i
                     ></a>
                     <a
                       href="/dashboard/update/<%= students[i].studentId %>"
-                      class="text-indigo-600 hover:text-indigo-900"
-                      ><i
-                        class="fa-solid fa-pen-to-square"
-                        style="color: #01c632"
-                      ></i
-                    ></a>
+                      class=""
+                    >
+                      <i class="fa-solid fa-pen-to-square text-green-800"></i>
+                    </a>
+
                     <button
                       onclick="deleteUser('<%= students[i].studentId %>')"
-                      class="text-indigo-600 hover:text-indigo-900"
                     >
-                      <i
-                        class="fa-sharp fa-solid fa-trash"
-                        style="color: #ff0000"
-                      ></i>
+                      <i class="fa-sharp fa-solid fa-trash text-red-800"></i>
                     </button>
                   </td>
                 </tr>
