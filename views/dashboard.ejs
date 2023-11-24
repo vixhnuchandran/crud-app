@@ -25,81 +25,117 @@
     />
 
     <script>
+      window.addEventListener("load", () => {
+        updateCheckboxes()
+      })
+
+      function updateCheckboxes() {
+        const checkboxes = document.querySelectorAll(
+          '#dropdown-options input[type="checkbox"]'
+        )
+
+        checkboxes.forEach(checkbox => {
+          const columnName = checkbox.name
+          const columnHeader = document.getElementById(`${columnName}-data`)
+          if (columnHeader) {
+            checkbox.checked = true
+          } else {
+            checkbox.checked = false
+          }
+        })
+      }
+
+      async function applySettings() {
+        const checkboxes = document.querySelectorAll(
+          '#dropdown-options input[type="checkbox"]'
+        )
+
+        const selectedColumns = Array.from(checkboxes)
+          .filter(checkbox => checkbox.checked)
+          .map(checkbox => checkbox.name)
+
+        const toShow = "?columns=" + selectedColumns.join(",")
+
+        window.location.href = `/dashboard${toShow}`
+      }
+
       let input, toSearch
       async function searchAndDisplay() {
         input = document.getElementById("searchInput")
         toSearch = input.value.trim().toLowerCase()
 
-        let apiUrl = `/api/v1/students?search=${toSearch}`
+        if (toSearch) {
+          let apiUrl = `/api/v1/students?search=${toSearch}`
 
-        try {
-          const response = await fetch(apiUrl)
-          const students = await response.json()
-          let tableElement = document.querySelector("table")
-          let tbody = tableElement.querySelector("tbody")
-          const paginationElement = document.getElementById("pagination")
-          tbody.innerHTML = ""
+          try {
+            const response = await fetch(apiUrl)
+            const students = await response.json()
+            let tableElement = document.querySelector("table")
+            let tbody = tableElement.querySelector("tbody")
+            const paginationElement = document.getElementById("pagination")
+            tbody.innerHTML = ""
 
-          students.forEach(student => {
-            const row = document.createElement("tr")
+            students.forEach(student => {
+              const row = document.createElement("tr")
 
-            const columns = [
-              {
-                class: "text-center py-5 pl-4 pr-3 text-sm sm:pl-0",
-                content: student.studentId,
-              },
-              {
-                class: "px-3 py-5 text-sm text-gray-500",
-                content: `<div class="h-11 w-11 flex-shrink-0 mx-auto">${
-                  student.imageurl
-                    ? `<img src="${student.imageurl}thumb" width="40" class="rounded-full" />`
-                    : '<img src="/img/null.png" width="40" class="mx-auto" />'
-                }</div>`,
-              },
-              {
-                class: "text-center px-3 py-5 text-sm text-gray-500",
-                content: `<div class="text-gray-900">${student.class}</div>`,
-              },
-              {
-                class: "text-center px-3 py-5 text-sm text-gray-500",
-                content: `<div class="text-gray-900">${student.firstname}</div>`,
-              },
-              {
-                class: "text-center px-3 py-5 text-sm text-gray-500",
-                content: `<div class="text-gray-900">${student.lastname}</div>`,
-              },
-              {
-                class: "text-center py-5 text-sm text-gray-500",
-                content: `<div class="text-gray-900">${student.email}</div>`,
-              },
-              {
-                class: "text-center px-3 py-5 text-sm text-gray-500",
-                content: `<div class="text-gray-900">${student.birthdate
-                  .split("-")
-                  .reverse()
-                  .join("-")}</div>`,
-              },
-              {
-                class:
-                  "relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4",
-                content: `<a href="/dashboard/view/${student.studentId}" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-eye" style="color: #3940fe"></i></a><a href="/dashboard/update/${student.studentId}" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-pen-to-square" style="color: #01c632"></i></a><button onclick="deleteUser('${student.studentId}')" class="text-indigo-600 hover:text-indigo-900"><i class="fa-sharp fa-solid fa-trash" style="color: #ff0000"></i></button>`,
-              },
-            ]
+              const columns = [
+                {
+                  class: "text-center py-5 pl-4 pr-3 text-sm sm:pl-0",
+                  content: student.studentId,
+                },
+                {
+                  class: "px-3 py-5 text-sm text-gray-500",
+                  content: `<div class="h-11 w-11 flex-shrink-0 mx-auto">${
+                    student.imageurl
+                      ? `<img src="${student.imageurl}thumb" width="40" class="rounded-full" />`
+                      : '<img src="/img/null.png" width="40" class="mx-auto" />'
+                  }</div>`,
+                },
+                {
+                  class: "text-center px-3 py-5 text-sm text-gray-500",
+                  content: `<div class="text-gray-900">${student.class}</div>`,
+                },
+                {
+                  class: "text-center px-3 py-5 text-sm text-gray-500",
+                  content: `<div class="text-gray-900">${student.firstname}</div>`,
+                },
+                {
+                  class: "text-center px-3 py-5 text-sm text-gray-500",
+                  content: `<div class="text-gray-900">${student.lastname}</div>`,
+                },
+                {
+                  class: "text-center py-5 text-sm text-gray-500",
+                  content: `<div class="text-gray-900">${student.email}</div>`,
+                },
+                {
+                  class: "text-center px-3 py-5 text-sm text-gray-500",
+                  content: `<div class="text-gray-900">${student.birthdate
+                    .split("-")
+                    .reverse()
+                    .join("-")}</div>`,
+                },
+                {
+                  class:
+                    "relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4",
+                  content: `<a href="/dashboard/view/${student.studentId}" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-eye" style="color: #3940fe"></i></a><a href="/dashboard/update/${student.studentId}" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-pen-to-square" style="color: #01c632"></i></a><button onclick="deleteUser('${student.studentId}')" class="text-indigo-600 hover:text-indigo-900"><i class="fa-sharp fa-solid fa-trash" style="color: #ff0000"></i></button>`,
+                },
+              ]
 
-            columns.forEach(column => {
-              const cell = document.createElement("td")
-              cell.className = column.class
-              cell.innerHTML = column.content
-              row.appendChild(cell)
+              columns.forEach(column => {
+                const cell = document.createElement("td")
+                cell.className = column.class
+                cell.innerHTML = column.content
+                row.appendChild(cell)
+              })
+
+              tbody.appendChild(row)
+
+              tableElement.appendChild(tbody)
+              paginationElement.style.display = "none"
             })
-
-            tbody.appendChild(row)
-
-            tableElement.appendChild(tbody)
-            paginationElement.style.display = "none"
-          })
-        } catch (error) {
-          console.error("Error fetching filtered data:", error)
+          } catch (error) {
+            console.error("Error fetching filtered data:", error)
+          }
         }
       }
 
@@ -216,20 +252,20 @@
                   href="/dashboard"
                   class="h-8 my-auto text-center w-16 rounded-3xl font-semibold text-white bg-indigo-600 ml-3 flex items-center justify-center"
                 >
-                  Clear
+                  Reset
                 </a>
               </div>
             </div>
           </div>
-          <div class="add flex justify-end ml-auto mr-10">
-            <div class="relative inline-block text-left">
+          <div class="flex justify-end ml-auto mr-1" id="show-fields">
+            <div class="relative text-left">
               <button
                 type="button"
                 class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 id="menu-button"
                 aria-haspopup="true"
               >
-                Sort by
+                Show
                 <svg
                   class="-mr-1 h-5 w-5 text-gray-400"
                   viewBox="0 0 20 20"
@@ -245,250 +281,334 @@
               </button>
 
               <div
-                class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 hidden"
+                class="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-gray-200 ring-1 ring-black divide-y divide-gray-100 hidden"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="menu-button"
                 tabindex="-1"
                 id="dropdown-options"
-                href="/dashboard?sortby=id  "
               >
-                <a
-                  href="/dashboard?sortby=id  "
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  data-order="asc"
-                  tabindex="-1"
-                  id="menu-item-2"
-                  >Id</a
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
                 >
-                <a
-                  href="/dashboard?sortby=firstname"
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  data-order="asc"
-                  tabindex="-1"
-                  id="menu-item-0"
-                  >Firstname</a
+                  <input type="checkbox" name="id" class="form-checkbox" />
+                  ID
+                </label>
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
                 >
-                <a
-                  href="/dashboard?sortby=lastname "
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  data-order="asc"
-                  tabindex="-1"
-                  id="menu-item-1"
-                  >Lastname</a
+                  <input type="checkbox" name="image" class="form-checkbox" />
+                  IMAGE
+                </label>
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
                 >
-                <a
-                  href="/dashboard?sortby=email  "
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  data-order="asc"
-                  tabindex="-1"
-                  id="menu-item-2"
-                  >Email</a
+                  <input
+                    type="checkbox"
+                    name="firstname"
+                    class="form-checkbox"
+                  />
+                  FIRSTNAME
+                </label>
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
                 >
+                  <input
+                    type="checkbox"
+                    name="lastname"
+                    class="form-checkbox"
+                  />
+                  LASTNAME
+                </label>
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
+                >
+                  <input type="checkbox" name="class" class="form-checkbox" />
+                  CLASS
+                </label>
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
+                >
+                  <input type="checkbox" name="email" class="form-checkbox" />
+                  EMAIL
+                </label>
+                <label
+                  class="block px-4 py-2 text-sm font-medium text-gray-700"
+                >
+                  <input
+                    name="birthdate"
+                    type="checkbox"
+                    name="birthdata"
+                    class="form-checkbox"
+                  />
+                  BIRTHDATE
+                </label>
+
+                <button
+                  class="w-26 flex items-center mx-auto mb-3 rounded-full justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-blue-200 hover:bg-blue-400"
+                  id="apply-button"
+                  onclick="applySettings()"
+                >
+                  Apply
+                </button>
               </div>
             </div>
+          </div>
 
-            <div class="mt-4 sm:ml-16 sm:mt-0 my-auto">
-              <a
-                href="/dashboard/create"
-                class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Add Student
-              </a>
-            </div>
+          <div class="mt-4 sm:ml-16 sm:mt-0 my-auto">
+            <a
+              href="/dashboard/create"
+              class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Add Student
+            </a>
           </div>
         </div>
+      </div>
 
-        <div class="mt-8 flow-root border-2">
-          <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div
-              class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
-            >
-              <table class="min-w-full divide-y divide-gray-300 sortable">
-                <thead>
-                  <tr>
-                    <th
-                      scope="col"
-                      class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
-                    >
-                      Id &nbsp;
-                    </th>
-                    <th
-                      scope="col"
-                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      Image
-                    </th>
+      <div class="mt-8 flow-root border-2">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div
+            class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
+          >
+            <table class="min-w-full divide-y divide-gray-300 sortable">
+              <thead>
+                <tr>
+                  <% if (students.some(student => student.studentId)) { %>
+                  <th
+                    id="id-data"
+                    scope="col"
+                    class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
+                  >
+                    <a
+                      href="/dashboard?sortby=id&columns=<%= colValues %>"
+                      class="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      data-order="asc"
+                      tabindex="-1"
+                      id="menu-item-2"
+                      >ID &nbsp; <i class="fa-sharp fa-solid fa-sort"></i>
+                    </a>
+                  </th>
+                  <% } %> <% if (students.some(student => student.imageurl)) {
+                  %>
 
-                    <th
-                      scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      Firstname &nbsp;
-                    </th>
-                    <th
-                      scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      Lastname &nbsp;
-                    </th>
-                    <th
-                      scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      Class &nbsp;
-                    </th>
-                    <th
-                      scope="col"
-                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      Email &nbsp;
-                    </th>
-                    <th
-                      scope="col"
-                      class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
-                    >
-                      Birthdate
-                    </th>
+                  <th
+                    id="image-data"
+                    scope="col"
+                    class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                  >
+                    IMAGE
+                  </th>
 
-                    <th
-                      scope="col"
-                      class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                  <%for (let i=0; i < students.length; i++){ %>
-                  <tr>
-                    <td
-                      class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0"
-                    >
-                      <div class="text-gray-900">
-                        <%= students[i].studentId %>
-                      </div>
-                    </td>
-                    <td
-                      class="whitespace-nowrap px-3 py-5 text-sm text-gray-500"
-                    >
-                      <div class="h-11 w-11 flex-shrink-0 mx-auto">
-                        <!-- <% if (students[i].imageurl) { %>
-                        <img
-                          src="<%= students[i].imageurl+'thumb' %>"
-                          width="40"
-                          class="rounded-full"
-                        />
-                        <% } else { %> -->
-                        <img
-                          src="/img/null.png"
-                          width="40"
-                          class="mx-auto rounded-full"
-                        />
-                        <!-- <% } %> -->
-                      </div>
-                    </td>
+                  <% } %><% if (students.some(student => student.firstname)) {
+                  %>
 
-                    <td
-                      class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
-                    >
-                      <div class="text-gray-900">
-                        <%= students[i].firstname %>
-                      </div>
-                    </td>
-                    <td
-                      class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
-                    >
-                      <div class="text-gray-900">
-                        <%= students[i].lastname %>
-                      </div>
-                    </td>
-                    <td
-                      class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
-                    >
-                      <div class="text-gray-900"><%= students[i].class %></div>
-                    </td>
-                    <td
-                      class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
-                    >
-                      <div class="text-gray-900"><%= students[i].email %></div>
-                    </td>
+                  <th
+                    id="firstname-data"
+                    scope="col"
+                    class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                  >
+                    <a
+                      href="/dashboard?sortby=firstname&columns=<%= colValues %>"
+                      class="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      data-order="asc"
+                      tabindex="-1"
+                      id="menu-item-0"
+                      >FIRSTNAME &nbsp; <i class="fa-sharp fa-solid fa-sort"></i
+                    ></a>
+                  </th>
+                  <% } %> <% if (students.some(student => student.lastname)) {
+                  %>
 
-                    <td
-                      class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
+                  <th
+                    id="lastname-data"
+                    scope="col"
+                    class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                  >
+                    <a
+                      href="/dashboard?sortby=lastname&columns=<%= colValues %>"
+                      class="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      data-order="asc"
+                      tabindex="-1"
+                      id="menu-item-1"
+                      >LASTNAME &nbsp; <i class="fa-sharp fa-solid fa-sort"></i
+                    ></a>
+                  </th>
+                  <% } %> <% if (students.some(student => student.class)) { %>
+
+                  <th
+                    id="class-data"
+                    scope="col"
+                    class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                  >
+                    CLASS &nbsp;
+                  </th>
+                  <% } %> <% if (students.some(student => student.email)) { %>
+
+                  <th
+                    id="email-data"
+                    scope="col"
+                    class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                  >
+                    <a
+                      href="/dashboard?sortby=email&columns=<%= colValues %>"
+                      class="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
+                      data-order="asc"
+                      tabindex="-1"
+                      id="menu-item-2"
+                      >EMAIL &nbsp; <i class="fa-sharp fa-solid fa-sort"></i>
+                    </a>
+                  </th>
+                  <% } %> <% if (students.some(student => student.birthdate)) {
+                  %>
+
+                  <th
+                    id="birthdate-data"
+                    scope="col"
+                    class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                  >
+                    BIRTHDATE
+                  </th>
+                  <% } %>
+
+                  <th
+                    id="actions-data"
+                    scope="col"
+                    class="cursor-pointer px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    ACTIONS
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <%for (let i=0; i < students.length; i++){ %>
+                <tr>
+                  <% if(students[i].studentId) { %>
+
+                  <td
+                    class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0"
+                  >
+                    <div class="text-gray-900">
+                      <%= students[i].studentId %>
+                    </div>
+                  </td>
+                  <% } %> <% if (students.some(student => student.imageurl)) {
+                  %>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                    <div class="h-11 w-11 flex-shrink-0 mx-auto">
+                      <img src="/img/null.png" alt="" />
+                    </div>
+                  </td>
+                  <% } %> <% if(students[i].firstname) { %>
+                  <td
+                    class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
+                  >
+                    <div class="text-gray-900">
+                      <%= students[i].firstname %>
+                    </div>
+                  </td>
+                  <% } %> <% if(students[i].lastname) { %>
+
+                  <td
+                    class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
+                  >
+                    <div class="text-gray-900"><%= students[i].lastname %></div>
+                  </td>
+                  <% } %> <% if(students[i].class) { %>
+                  <td
+                    class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
+                  >
+                    <div class="text-gray-900"><%= students[i].class %></div>
+                  </td>
+                  <% } %> <% if(students[i].email) { %>
+                  <td
+                    class="whitespace-nowrap text-center py-5 text-sm text-gray-500"
+                  >
+                    <div class="text-gray-900"><%= students[i].email %></div>
+                  </td>
+                  <% } %> <% if(students[i].birthdate) { %>
+                  <td
+                    class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
+                  >
+                    <div class="text-gray-900">
+                      <%= students[i].birthdate.split('-').reverse().join('-')
+                      %>
+                    </div>
+                  </td>
+                  <% } %>
+
+                  <td
+                    class="relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4"
+                  >
+                    <a
+                      href="/dashboard/view/<%= students[i].studentId %>"
+                      class="text-indigo-600 hover:text-indigo-900"
+                      ><i class="fa-solid fa-eye" style="color: #3940fe"></i
+                    ></a>
+                    <a
+                      href="/dashboard/update/<%= students[i].studentId %>"
+                      class="text-indigo-600 hover:text-indigo-900"
+                      ><i
+                        class="fa-solid fa-pen-to-square"
+                        style="color: #01c632"
+                      ></i
+                    ></a>
+                    <button
+                      onclick="deleteUser('<%= students[i].studentId %>')"
+                      class="text-indigo-600 hover:text-indigo-900"
                     >
-                      <div class="text-gray-900">
-                        <%= students[i].birthdate.split('-').reverse().join('-')
-                        %>
-                      </div>
-                    </td>
-                    <td
-                      class="relative whitespace-nowrap py-5 pr-4 ml-8 mx-auto text-sm font-medium sm:pr-0 space-x-4"
-                    >
-                      <a
-                        href="/dashboard/view/<%= students[i].studentId %>"
-                        class="text-indigo-600 hover:text-indigo-900"
-                        ><i class="fa-solid fa-eye" style="color: #3940fe"></i
-                      ></a>
-                      <a
-                        href="/dashboard/update/<%= students[i].studentId %>"
-                        class="text-indigo-600 hover:text-indigo-900"
-                        ><i
-                          class="fa-solid fa-pen-to-square"
-                          style="color: #01c632"
-                        ></i
-                      ></a>
-                      <button
-                        onclick="deleteUser('<%= students[i].studentId %>')"
-                        class="text-indigo-600 hover:text-indigo-900"
-                      >
-                        <i
-                          class="fa-sharp fa-solid fa-trash"
-                          style="color: #ff0000"
-                        ></i>
-                      </button>
-                    </td>
-                  </tr>
-                  <%} %>
-                </tbody>
-              </table>
-            </div>
+                      <i
+                        class="fa-sharp fa-solid fa-trash"
+                        style="color: #ff0000"
+                      ></i>
+                    </button>
+                  </td>
+                </tr>
+                <%} %>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
       <div id="pagination" class="mx-auto text-center mt-10 mb-20 space-x-3">
         <% if (page > 1) { %>
-        <a class="selectedLink" href="/dashboard?page=1&sortby=<%= sortby %>"
+        <a
+          class="selectedLink border-2 p-1"
+          href="/dashboard?page=1&sortby=<%= sortby %>&columns=<%= colValues %>"
           >First</a
         >
         <a
-          class="selectedLink"
-          href="/dashboard?page=<%= page - 1 %>&sortby=<%= sortby %>"
+          class="selectedLink border-2 p-1"
+          href="/dashboard?page=<%= page - 1 %>&sortby=<%= sortby %>&columns=<%= colValues %>"
           >Previous</a
         >
         <% } %> <% for (let i = iterator; i <= endingLink; i++) { %> <% if (i
         === page) { %>
         <visited
-          class="selectedLink"
-          href="/dashboard?page=<%= i %>&sortby=<%= sortby %>"
+          class=""
+          href="/dashboard?page=<%= i %>&sortby=<%= sortby %>&columns=<%= colValues %>"
           ><%= i %>
         </visited>
         <% } else { %>
-        <a href="/dashboard?page=<%= i %>&sortby=<%= sortby %>"><%= i %></a>
+        <a
+          class="selectedLink border-2 p-1"
+          href="/dashboard?page=<%= i %>&sortby=<%= sortby %>&columns=<%= colValues %>"
+          ><%= i %></a
+        >
         <% } %> <% } %> <% if (page < numOfPages) { %>
         <a
-          class="selectedLink"
-          href="/dashboard?page=<%= page + 1 %>&sortby=<%= sortby %>"
+          class="selectedLink border-2 p-1"
+          href="/dashboard?page=<%= page + 1 %>&sortby=<%= sortby %>&columns=<%= colValues %>"
           >Next</a
         >
         <a
-          class="selectedLink"
-          href="/dashboard?page=<%= numOfPages %>&sortby=<%= sortby %>"
+          class="selectedLink border-2 p-1"
+          href="/dashboard?page=<%= numOfPages %>&sortby=<%= sortby %>&columns=<%= colValues %>"
           >Last</a
         >
         <% } %>
