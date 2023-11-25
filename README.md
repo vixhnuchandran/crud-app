@@ -52,7 +52,15 @@ Welcome to the Student Management System (SMS) CRUD application – a comprehens
 - [x] Implement user authentication.
 - [x] Vercel Blob configured for file storage and serving, with thumbnail and original versions.
 - [x] Audit logs feature added with a separate database.
-- [ ] Add pagination for improved user experience.
+- [x] Add pagination for improved user experience.
+- [x] Add pagination for improved user experience.
+- [x] Show Fields feature to allow users to customize displayed fields
+- [x] Sorting function in ascending and descending order for text ID, first name, last name, and email.
+- [ ] Use MongoDB for the backend.
+- [ ]
+- [ ]
+- [ ]
+- [ ]
 
 ## License:
 
