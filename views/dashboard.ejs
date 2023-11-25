@@ -217,7 +217,7 @@
       </div>
     </div>
 
-    <div id="main" class="mx-10">
+    <div id="main" class="mx-20 mt-10">
       <div class="">
         <div class="sm:flex sm:items-center mt-3">
           <div class="flex justify-start items-between">
@@ -257,7 +257,7 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-end ml-auto mr-1" id="show-fields">
+          <div class="flex justify-end ml-auto mb-2 mr-1 z-10" id="show-fields">
             <div class="relative text-left">
               <button
                 type="button"
@@ -376,10 +376,9 @@
                     class="cursor-pointer py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-0"
                   >
                     <a
-                      href="/dashboard?sortby=id&columns=<%= colValues %>"
+                      href="/dashboard?sortby=id&order=<%= orderType %>&columns=<%= colValues %>"
                       class="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
-                      data-order="asc"
                       tabindex="-1"
                       id="menu-item-2"
                       >ID &nbsp; <i class="fa-sharp fa-solid fa-sort"></i>
@@ -403,10 +402,9 @@
                     class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                   >
                     <a
-                      href="/dashboard?sortby=firstname&columns=<%= colValues %>"
+                      href="/dashboard?sortby=firstname&order=<%= orderType %>&columns=<%= colValues %>"
                       class="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
-                      data-order="asc"
                       tabindex="-1"
                       id="menu-item-0"
                       >FIRSTNAME &nbsp; <i class="fa-sharp fa-solid fa-sort"></i
@@ -421,10 +419,9 @@
                     class="cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                   >
                     <a
-                      href="/dashboard?sortby=lastname&columns=<%= colValues %>"
+                      href="/dashboard?sortby=lastname&order=<%= orderType %>&columns=<%= colValues %>"
                       class="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
-                      data-order="asc"
                       tabindex="-1"
                       id="menu-item-1"
                       >LASTNAME &nbsp; <i class="fa-sharp fa-solid fa-sort"></i
@@ -447,10 +444,9 @@
                     class="no-sort cursor-pointer px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                   >
                     <a
-                      href="/dashboard?sortby=email&columns=<%= colValues %>"
+                      href="/dashboard?sortby=email&order=<%= orderType %>&columns=<%= colValues %>"
                       class="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
-                      data-order="asc"
                       tabindex="-1"
                       id="menu-item-2"
                       >EMAIL &nbsp; <i class="fa-sharp fa-solid fa-sort"></i>
