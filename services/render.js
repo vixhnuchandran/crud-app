@@ -457,10 +457,10 @@ exports.createStudent = async (req, res) => {
         })
       }
 
-      // imageURL = await toVercelBlob(fname+lastname, inputBuffer)
-      // const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-      // await toVercelBlob(fname+lname+"thumb", outBuffer)
-    }
+    //   imageURL = await toVercelBlob(fname + lastname, inputBuffer)
+    //   const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+    //   await toVercelBlob(fname + lname + "thumb", outBuffer)
+    // }
     const newStudent = await Students.create({
       s_firstname: req.body.firstname.trim(),
       s_lastname: req.body.lastname.trim(),
