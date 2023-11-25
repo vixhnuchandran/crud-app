@@ -5,7 +5,7 @@ const Marks = require("../model/marks")
 const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
 
 const sharp = require("sharp")
-const { Clerk, clerkClient } = require("@clerk/clerk-sdk-node")
+const { clerkClient } = require("@clerk/clerk-sdk-node")
 require("dotenv").config()
 
 //
@@ -117,6 +117,7 @@ exports.contactInfo = async (req, res) => {
 }
 
 //
+//
 // student info page
 exports.studentInfo = async (req, res) => {
   if (!req.auth.userId) {
@@ -146,6 +147,8 @@ exports.studentInfo = async (req, res) => {
   }
 }
 
+//
+//
 // view + personal info
 exports.view = async (req, res) => {
   if (!req.auth.userId) {
@@ -180,6 +183,8 @@ exports.view = async (req, res) => {
   }
 }
 
+//
+//
 // dashboard
 exports.dashboard = async (req, res) => {
   if (!req.auth.userId) {
@@ -451,9 +456,9 @@ exports.createStudent = async (req, res) => {
         })
       }
 
-      imageURL = await toVercelBlob(fname, inputBuffer)
-      const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-      const thumbnailURL = await toVercelBlob("thumb" + fname, outBuffer)
+      // imageURL = await toVercelBlob(fname+lastname, inputBuffer)
+      // const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+      // await toVercelBlob(fname+lname+"thumb", outBuffer)
     }
     const newStudent = await Students.create({
       s_firstname: req.body.firstname.trim(),
