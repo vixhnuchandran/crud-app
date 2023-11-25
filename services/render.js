@@ -431,66 +431,67 @@ exports.createNewMarksheet = async (req, res) => {
 exports.createStudent = async (req, res) => {
   if (!req.auth.userId || !req.body) {
     return res.render("error")
-  }
-  try {
-    const user = await clerkClient.users.getUser(req.auth.userId)
+  } else {
+    try {
+      const user = await clerkClient.users.getUser(req.auth.userId)
 
-    let imageURL = null
+      let imageURL = null
 
-    // const fname = req.body.firstname.trim()
-    // const lname = req.body.lastname.trim()
+      // const fname = req.body.firstname.trim()
+      // const lname = req.body.lastname.trim()
 
-    if (req.file) {
-      const file = req.file
-      const inputBuffer = req.file.buffer
+      if (req.file) {
+        const file = req.file
+        const inputBuffer = req.file.buffer
 
-      if (inputBuffer.length > 300000) {
-        return res
-          .status(400)
-          .json({ error: "File size must be less than 300KB" })
+        if (inputBuffer.length > 300000) {
+          return res
+            .status(400)
+            .json({ error: "File size must be less than 300KB" })
+        }
+
+        const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"]
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          return res.status(400).json({
+            error: "Invalid file type. Please upload a JPEG, JPG, or PNG file.",
+          })
+        }
+
+        //   imageURL = await toVercelBlob(fname + lastname, inputBuffer)
+        //   const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+        //   await toVercelBlob(fname + lname + "thumb", outBuffer)
       }
+      const newStudent = await Students.create({
+        s_firstname: req.body.firstname.trim(),
+        s_lastname: req.body.lastname.trim(),
+        s_birthdate: req.body.birthdate,
+        s_contactno: req.body.contact,
+        s_emailid: req.body.email,
+        s_gender: req.body.gender,
+        s_class: req.body.class,
+        s_nationality: req.body.nationality,
+        s_address: req.body.address.trim(),
+        s_image_url: imageURL,
+      })
 
-      const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"]
-      if (!allowedMimeTypes.includes(file.mimetype)) {
+      res.redirect("/dashboard")
+
+      const studentId = newStudent.s_id
+      await Crudlogs.create({
+        user_id: user.username,
+        action_type: "CREATE",
+        target_student_id: studentId,
+      })
+      return
+    } catch (err) {
+      if (err.message.includes("Invalid file format")) {
         return res.status(400).json({
-          error: "Invalid file type. Please upload a JPEG, JPG, or PNG file.",
+          error: "Invalid file format. Please upload a JPEG, JPG, or PNG file.",
         })
       }
 
-    //   imageURL = await toVercelBlob(fname + lastname, inputBuffer)
-    //   const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-    //   await toVercelBlob(fname + lname + "thumb", outBuffer)
-    // }
-    const newStudent = await Students.create({
-      s_firstname: req.body.firstname.trim(),
-      s_lastname: req.body.lastname.trim(),
-      s_birthdate: req.body.birthdate,
-      s_contactno: req.body.contact,
-      s_emailid: req.body.email,
-      s_gender: req.body.gender,
-      s_class: req.body.class,
-      s_nationality: req.body.nationality,
-      s_address: req.body.address.trim(),
-      s_image_url: imageURL,
-    })
-
-    res.redirect("/dashboard")
-
-    const studentId = newStudent.s_id
-    await Crudlogs.create({
-      user_id: user.username,
-      action_type: "CREATE",
-      target_student_id: studentId,
-    })
-    return
-  } catch (err) {
-    if (err.message.includes("Invalid file format")) {
-      return res.status(400).json({
-        error: "Invalid file format. Please upload a JPEG, JPG, or PNG file.",
-      })
+      return res.render("error")
     }
-
-    return res.render("error")
   }
 }
 
