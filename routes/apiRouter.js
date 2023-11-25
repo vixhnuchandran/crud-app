@@ -2,7 +2,6 @@ const { Router } = require("express")
 const route = Router()
 const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
-const Marks = require("../model/marks")
 const { Op } = require("sequelize")
 
 route.get("/api/v1/students", async (req, res) => {
