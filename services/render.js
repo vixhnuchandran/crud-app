@@ -437,7 +437,8 @@ exports.createStudent = async (req, res) => {
 
     let imageURL = null
 
-    const fname = req.body.firstname.trim()
+    // const fname = req.body.firstname.trim()
+    // const lname = req.body.lastname.trim()
 
     if (req.file) {
       const file = req.file
