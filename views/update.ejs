@@ -46,7 +46,7 @@
     
     <div
       id="current-image"
-      class="flex items-center justify-center space-x-4 my-10"
+      class="flex items-center justify-center space-x-4 mb-6 "
     >
       <% if (student.imageurl) { %> <img src="<%= student.imageurl %>"
       alt="profile-image" width="100" class= "rounded-full" /> <% } else { %>
@@ -58,15 +58,15 @@
       </h1>
     </div>
 
-    <div id="flex-container" class="flex items-center justify-center h-screen">
-      <div id="flex-item" class="mb-auto">
+    <div id="flex-container" class="flex items-center justify-center h-screen  ">
+      <div id="flex-item" class="mb-auto ">
         <form
         class="w-full max-w-lg"
         action="/dashboard/update/<%= student.studentId %>"
         method="POST"
         enctype="multipart/form-data"
       >
-        <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="flex flex-wrap -mx-3 mb-6 ">
             <input
               class="hidden appearance-none  w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
               id="imageurl"
@@ -261,7 +261,7 @@
 
           </div>
         </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="flex flex-wrap  mb-6">
           <div class="w-96 px-3">
             <label
               class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
