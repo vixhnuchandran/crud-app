@@ -1,5 +1,5 @@
 const { sequelize } = require("../config/database")
-const { DataTypes, DATE } = require("sequelize")
+const { DataTypes } = require("sequelize")
 
 const Crudlogs = sequelize.define(
   "crudlogs",
