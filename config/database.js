@@ -1,5 +1,5 @@
-const pg = require("pg")
 const { Sequelize } = require("sequelize")
+require("pg")
 require("dotenv").config()
 const sequelize = new Sequelize(process.env.POSTGRES_URL + "?sslmode=require", {
   dialect: "postgres",
