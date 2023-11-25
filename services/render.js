@@ -1,4 +1,4 @@
-const { put, del, list } = require("@vercel/blob")
+const { put, del } = require("@vercel/blob")
 const Students = require("../model/student")
 const Crudlogs = require("../model/crudlog")
 const Marks = require("../model/marks")
@@ -7,9 +7,6 @@ const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
 const sharp = require("sharp")
 const { Clerk, clerkClient } = require("@clerk/clerk-sdk-node")
 require("dotenv").config()
-
-const URL = process.env.BASE_URL
-const clerk = Clerk({ secretKey: process.env.CLERK_SECRET_KEY })
 
 //
 //
@@ -82,7 +79,6 @@ exports.marksheet = async (req, res) => {
     } catch (error) {
       // console.log(error.message)
       return res.status(500).render("error")
-      return
     }
   }
 }
@@ -216,8 +212,12 @@ exports.dashboard = async (req, res) => {
         res.redirect("/dashboard?page=" + encodeURIComponent("1"))
       }
       let sortby, tSortBy, orderType, attributes, columns, colValues
-      sortby = req.query.sortby || "id"
-      orderType = req.query.order || "ASC"
+      sortby =
+        req.query.sortby === "id" || "firstname" || "lastname" || "email"
+          ? req.query.sortby
+          : "id"
+
+      orderType = req.query.order === "ASC" ? "DESC" : "ASC"
 
       if (req.query.columns) {
         colValues = req.query.columns
@@ -250,8 +250,6 @@ exports.dashboard = async (req, res) => {
         tSortBy = "s_lastname"
       } else if (sortby === "email") {
         tSortBy = "s_emailid"
-      } else if (sortby === "id") {
-        tSortBy = "s_id"
       } else {
         tSortBy = "s_id"
       }
@@ -283,6 +281,7 @@ exports.dashboard = async (req, res) => {
 
       const students = data.map(student => student.toJSON())
       return res.render("dashboard", {
+        orderType,
         colValues,
         sortby,
         students,
@@ -407,7 +406,7 @@ exports.createNewMarksheet = async (req, res) => {
   } else {
     const sid = req.params.sid
     try {
-      const newStudentMarks = await Marks.create({
+      await Marks.create({
         s_id: sid,
         maths: req.body.maths,
         physics: req.body.physics,
