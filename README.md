@@ -49,18 +49,14 @@ Welcome to the Student Management System (SMS) CRUD application – a comprehens
 - [x] Frontend rendering using EJS.
 - [x] Integration with Vercel Postgres for serverless SQL database.
 - [x] Implement search and filter functionality.
-- [x] Implement user authentication.
-- [x] Vercel Blob configured for file storage and serving, with thumbnail and original versions.
+- [x] Implement user authentication using CLERK.
+- [x] Vercel Blob configured for image storage and serving, with thumbnail and original versions.
 - [x] Audit logs feature added with a separate database.
 - [x] Add pagination for improved user experience.
-- [x] Add pagination for improved user experience.
 - [x] Show Fields feature to allow users to customize displayed fields
-- [x] Sorting function in ascending and descending order for text ID, first name, last name, and email.
-- [ ] Use MongoDB for the backend.
-- [ ]
-- [ ]
-- [ ]
-- [ ]
+- [x] Sorting function in ascending and descending order for ID, first name, last name, and email columns.
+- [x] Use MongoDB for the backend.
+- [ ] Roles based access.
 
 ## License:
 
