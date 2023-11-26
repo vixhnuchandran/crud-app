@@ -15,7 +15,6 @@ Welcome to the Student Management System (SMS) CRUD application – a comprehens
 - **Vercel Postgres:** A serverless SQL database designed to seamlessly integrate with Vercel Functions and frontend frameworks.
 - **EJS (Embedded JavaScript):** A templating language for dynamic HTML generation on the server side, enhancing the rendering process.
 - **Clerk:** To swiftly and effortlessly integrate secure authentication and user management into your JavaScript application
-- **Sequelize:** An Object-Relational Mapping (ORM) tool, simplifying database interactions and enhancing data modeling.
 - **Vercel Blob:** A storage solution allowing the upload and serving of files through unique and unguessable URLs.
 - **Vercel:** A cloud platform for front-end developers, facilitating easy deployment and hosting.
 
