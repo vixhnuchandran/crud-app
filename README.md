@@ -23,7 +23,7 @@ Welcome to the Student Management System (SMS) CRUD application – a comprehens
 
 ### Frontend
 
-- [Tailwind CSS](https://tailwindcss.com/): A utility-first CSS framework for rapidly building custom designs.
+- **[Tailwind CSS](https://tailwindcss.com/)**: A utility-first CSS framework for rapidly building custom designs.
 
 ### Backend
 
