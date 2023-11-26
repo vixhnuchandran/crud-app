@@ -38,6 +38,8 @@ Welcome to the Student Management System (SMS) CRUD application – a comprehens
 - **[pg](https://www.npmjs.com/package/pg):** PostgreSQL client for Node.js, enables interaction with PostgreSQL databases.
 - **[sequelize](https://www.npmjs.com/package/sequelize):** A promise-based Node.js ORM for PostgreSQL, MySQL, MariaDB, SQLite, and Microsoft SQL Server.
 - **[@vercel/blob](https://www.npmjs.com/package/@vercel/blob):** Vercel's Blob library for file storage and serving.
+- **[mongodb](https://www.npmjs.com/package/mongodb):** MongoDB driver for Node.js, enables interaction with MongoDB databases.
+- **[mongoose](https://www.npmjs.com/package/mongoose):** MongoDB object modeling for Node.js, provides a higher-level abstraction for MongoDB interactions.
 
 ### Authentication
 
