@@ -1,7 +1,12 @@
 const { put, del } = require("@vercel/blob")
-const Students = require("../model/student")
-const Crudlogs = require("../model/crudlog")
-const Marks = require("../model/marks")
+// const Students = require("../models/postgres/student")
+const Crudlogs = require("../models/postgres/crudlog")
+// const Marks = require("../models/postgres/marks")
+
+const { Students, Marks } = require("../models/mongo/students")
+// const Crudlogs = require("../models/mongo/")
+
+const { createData, readData, updateData } = require("../utils/mongooseUtils")
 const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
 
 const sharp = require("sharp")
@@ -10,203 +15,15 @@ require("dotenv").config()
 
 //
 //
-// marksheet
-exports.marksheet = async (req, res) => {
-  if (!req.auth.userId) {
-    return res.render("dashboardError", { message: "Access to Marsheet" })
-  } else {
-    try {
-      const sid = req.params.sid
-      const data = await Students.findOne({
-        where: { isRemoved: false, s_id: sid },
-        include: [
-          {
-            model: Marks,
-            attributes: [
-              "maths",
-              "physics",
-              "chemistry",
-              "biology",
-              "language",
-            ],
-          },
-        ],
-        attributes: [
-          ["s_id", "studentId"],
-          ["s_firstname", "firstname"],
-          ["s_lastname", "lastname"],
-          ["s_image_url", "imageurl"],
-        ],
-      })
-
-      const studentData = data.toJSON()
-
-      if (!studentData.students_mark) {
-        return res.status(404).render("createMarksheet", { studentData })
-      }
-
-      const mathsResult = calculateGradeAndGPA(studentData.students_mark.maths)
-      const physicsResult = calculateGradeAndGPA(
-        studentData.students_mark.physics
-      )
-      const chemistryResult = calculateGradeAndGPA(
-        studentData.students_mark.chemistry
-      )
-      const biologyResult = calculateGradeAndGPA(
-        studentData.students_mark.biology
-      )
-      const languageResult = calculateGradeAndGPA(
-        studentData.students_mark.language
-      )
-
-      const maths = { grade: mathsResult.grade, gpa: mathsResult.gpa }
-      const physics = { grade: physicsResult.grade, gpa: physicsResult.gpa }
-      const chemistry = {
-        grade: chemistryResult.grade,
-        gpa: chemistryResult.gpa,
-      }
-      const biology = { grade: biologyResult.grade, gpa: biologyResult.gpa }
-      const language = { grade: languageResult.grade, gpa: languageResult.gpa }
-
-      return res.status(200).render("marksheet", {
-        studentData,
-        maths,
-        physics,
-        chemistry,
-        biology,
-        language,
-      })
-    } catch (error) {
-      // console.log(error.message)
-      return res.status(500).render("error")
-    }
-  }
-}
-
-//
-//
-// contact info page
-exports.contactInfo = async (req, res) => {
-  if (!req.auth.userId) {
-    return res.render("dashboardError", { message: "Access to View" })
-  } else {
-    try {
-      const sid = req.params.sid
-      let studentData = await Students.findOne({
-        where: { isRemoved: false, s_id: sid },
-
-        attributes: [
-          ["s_id", "studentId"],
-          ["s_firstname", "firstname"],
-          ["s_lastname", "lastname"],
-          ["s_emailid", "email"],
-          ["s_contactno", "contact"],
-          ["s_address", "address"],
-          ["s_image_url", "imageurl"],
-        ],
-      })
-      studentData = studentData.toJSON()
-
-      return res.status(200).render("contact", {
-        studentData,
-      })
-    } catch (error) {
-      return res.status(200).render("error")
-    }
-  }
-}
-
-//
-//
-// student info page
-exports.studentInfo = async (req, res) => {
-  if (!req.auth.userId) {
-    return res.render("dashboardError", { message: "Access to View" })
-  } else {
-    try {
-      const sid = req.params.sid
-      let studentData = await Students.findOne({
-        where: { isRemoved: false, s_id: sid },
-
-        attributes: [
-          ["s_id", "studentId"],
-          ["s_firstname", "firstname"],
-          ["s_lastname", "lastname"],
-          ["s_class", "class"],
-          ["s_image_url", "imageurl"],
-        ],
-      })
-      studentData = studentData.toJSON()
-
-      return res.status(200).render("student", {
-        studentData,
-      })
-    } catch (error) {
-      return res.status(200).render("error")
-    }
-  }
-}
-
-//
-//
-// view + personal info
-exports.view = async (req, res) => {
-  if (!req.auth.userId) {
-    return res.render("dashboardError", { message: "Access to View" })
-  } else {
-    try {
-      const sid = req.params.sid
-      let studentData = await Students.findOne({
-        where: { isRemoved: false, s_id: sid },
-
-        attributes: [
-          ["s_id", "studentId"],
-          ["s_firstname", "firstname"],
-          ["s_lastname", "lastname"],
-          ["s_birthdate", "birthdate"],
-          ["s_gender", "gender"],
-          ["s_nationality", "nationality"],
-          ["s_image_url", "imageurl"],
-        ],
-      })
-      studentData = studentData.toJSON()
-
-      const age = calculateAge(studentData.birthdate)
-
-      return res.status(200).render("view", {
-        studentData,
-        age,
-      })
-    } catch (error) {
-      return res.status(200).render("error")
-    }
-  }
-}
-
-//
-//
-// dashboard
+// dashboard (mongo)
 exports.dashboard = async (req, res) => {
   if (!req.auth.userId) {
     return res.render("dashboardError", { message: "Access to Dashboard" })
   } else {
     try {
       const resultsPerPage = 7
-      const allData = await Students.findAll({
-        where: { isRemoved: false },
-        attributes: [
-          ["s_id", "studentId"],
-          ["s_firstname", "firstname"],
-          ["s_lastname", "lastname"],
-          ["s_birthdate", "birthdate"],
-          ["s_emailid", "email"],
-          ["s_class", "class"],
-          ["s_image_url", "imageurl"],
-        ],
-        order: [["s_id", "ASC"]],
-      })
-
-      const numOfData = allData.length
+      const count = await Students.countDocuments({ isRemoved: false })
+      const numOfData = count
       const numOfPages = Math.ceil(numOfData / resultsPerPage)
       let page = req.query.page ? Number(req.query.page) : 1
       const startingLimit = (page - 1) * resultsPerPage
@@ -222,7 +39,7 @@ exports.dashboard = async (req, res) => {
           ? req.query.sortby
           : "id"
 
-      orderType = req.query.order === "ASC" ? "DESC" : "ASC"
+      orderType = req.query.order === "asc" ? "desc" : "asc"
 
       if (req.query.columns) {
         colValues = req.query.columns
@@ -259,21 +76,32 @@ exports.dashboard = async (req, res) => {
         tSortBy = "s_id"
       }
 
-      const data = await Students.findAll({
-        where: { isRemoved: false },
-        attributes: attributes || [
-          ["s_id", "studentId"],
-          ["s_firstname", "firstname"],
-          ["s_lastname", "lastname"],
-          ["s_birthdate", "birthdate"],
-          ["s_emailid", "email"],
-          ["s_class", "class"],
-          ["s_image_url", "imageurl"],
-        ],
-        order: [[tSortBy, orderType]],
-        limit: resultsPerPage,
-        offset: startingLimit,
-      })
+      const filter = {
+        isRemoved: false,
+      }
+
+      const projection = {
+        studentId: "$s_id",
+        firstname: "$s_firstname",
+        lastname: "$s_lastname",
+        birthdate: "$s_birthdate",
+        email: "$s_emailid",
+        class: "$s_class",
+        imageurl: "$s_image_url",
+      }
+      const order = [[tSortBy, orderType]]
+      const limit = resultsPerPage
+      const offset = startingLimit
+
+      let data = await readData.all(
+        Students,
+        filter,
+        projection,
+        order,
+        offset,
+        limit
+      )
+
       let iterator, endingLink
 
       if (page === 1) {
@@ -296,9 +124,189 @@ exports.dashboard = async (req, res) => {
         numOfPages,
       })
     } catch (error) {
-      // res.render("error")
-      res.json(error.message)
-      return
+      console.log(error)
+      return res.render("error")
+    }
+  }
+}
+
+//
+//
+// marksheet
+exports.marksheet = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to Marsheet" })
+  } else {
+    try {
+      const sid = req.params.sid
+
+      const data = await Students.findOne({
+        isRemoved: false,
+        s_id: sid,
+      }).select({
+        studentId: "$s_id",
+        firstname: "$s_firstname",
+        lastname: "$s_lastname",
+        birthdate: "$s_birthdate",
+        email: "$s_emailid",
+        class: "$s_class",
+        imageurl: "$s_image_url",
+      })
+
+      const studentData = data.toJSON()
+      console.log(studentData)
+      if (!studentData.students_mark) {
+        return res.status(404).render("createMarksheet", { studentData })
+      }
+
+      const mathsResult = calculateGradeAndGPA(studentData.students_mark.maths)
+      const physicsResult = calculateGradeAndGPA(
+        studentData.students_mark.physics
+      )
+      const chemistryResult = calculateGradeAndGPA(
+        studentData.students_mark.chemistry
+      )
+      const biologyResult = calculateGradeAndGPA(
+        studentData.students_mark.biology
+      )
+      const languageResult = calculateGradeAndGPA(
+        studentData.students_mark.language
+      )
+
+      const maths = { grade: mathsResult.grade, gpa: mathsResult.gpa }
+      const physics = { grade: physicsResult.grade, gpa: physicsResult.gpa }
+      const chemistry = {
+        grade: chemistryResult.grade,
+        gpa: chemistryResult.gpa,
+      }
+      const biology = { grade: biologyResult.grade, gpa: biologyResult.gpa }
+      const language = { grade: languageResult.grade, gpa: languageResult.gpa }
+
+      return res.status(200).render("marksheet", {
+        studentData,
+        maths,
+        physics,
+        chemistry,
+        biology,
+        language,
+      })
+    } catch (error) {
+      console.log(error.message)
+      return res.status(500).render("error")
+    }
+  }
+}
+
+//
+//
+// contact info page
+exports.contactInfo = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to View" })
+  } else {
+    try {
+      const sid = req.params.sid
+
+      const filter = {
+        isRemoved: false,
+        s_id: sid,
+      }
+
+      const projection = {
+        studentId: "$s_id",
+        firstname: "$s_firstname",
+        lastname: "$s_lastname",
+        email: "$s_emailid",
+        contact: "$s_contactno",
+        address: "$s_address",
+      }
+
+      let studentData = await readData.one(Students, filter, projection)
+
+      studentData = studentData.toJSON()
+      console.log(studentData)
+      return res.status(200).render("contact", {
+        studentData,
+      })
+    } catch (error) {
+      return res.status(200).render("error")
+    }
+  }
+}
+
+//
+//
+// student info page
+exports.studentInfo = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to View" })
+  } else {
+    try {
+      const sid = req.params.sid
+
+      const filter = {
+        isRemoved: false,
+        s_id: sid,
+      }
+
+      const projection = {
+        studentId: "$s_id",
+        firstname: "$s_firstname",
+        lastname: "$s_lastname",
+        class: "$s_class",
+        imageurl: "$s_image_url",
+      }
+
+      let studentData = await readData.one(Students, filter, projection)
+      studentData = studentData.toJSON()
+      console.log(studentData)
+      return res.status(200).render("student", {
+        studentData,
+      })
+    } catch (error) {
+      console.log(error)
+      return res.status(200).render("error")
+    }
+  }
+}
+
+//
+//
+// view + personal info
+exports.view = async (req, res) => {
+  if (!req.auth.userId) {
+    return res.render("dashboardError", { message: "Access to View" })
+  } else {
+    try {
+      const sid = req.params.sid
+
+      const filter = {
+        isRemoved: false,
+        s_id: sid,
+      }
+
+      const projection = {
+        studentId: "$s_id",
+        firstname: "$s_firstname",
+        lastname: "$s_lastname",
+        birthdate: "$s_birthdate",
+        gender: "$s_gender",
+        nationality: "$s_nationality",
+        imageurl: "$s_image_url",
+      }
+
+      let studentData = await readData.one(Students, filter, projection)
+
+      studentData = studentData.toJSON()
+      console.log(studentData)
+      const age = calculateAge(studentData.birthdate)
+
+      return res.status(200).render("view", {
+        studentData,
+        age,
+      })
+    } catch (error) {
+      return res.status(200).render("error")
     }
   }
 }
@@ -368,26 +376,28 @@ exports.update = async (req, res) => {
   } else {
     try {
       const sid = req.params.sid
-
+      const projection = {
+        studentId: "$s_id",
+        firstname: "$s_firstname",
+        lastname: "$s_lastname",
+        birthdate: "$s_birthdate",
+        gender: "$s_gender",
+        nationality: "$s_nationality",
+        contact: "$s_contactno",
+        email: "$s_emailid",
+        address: "$s_address",
+        class: "$s_class",
+        // imageurl: "$s_image_url",
+      }
       if (sid) {
-        const data = await Students.findByPk(sid, {
-          where: { isRemoved: false },
-          attributes: [
-            ["s_id", "studentId"],
-            ["s_class", "class"],
-            ["s_firstname", "firstname"],
-            ["s_lastname", "lastname"],
-            ["s_birthdate", "birthdate"],
-            ["s_gender", "gender"],
-            ["s_emailid", "email"],
-            ["s_contactno", "contact"],
-            ["s_nationality", "nationality"],
-            ["s_address", "address"],
-            ["s_image_url", "imageurl"],
-          ],
-        })
-        const student = data.toJSON()
+        const data = await readData.one(
+          Students,
+          { s_id: sid, isRemoved: false },
+          projection
+        )
 
+        const student = data.toJSON()
+        console.log(student)
         return res.render("update", { heading: "Update Student", student })
       }
     } catch (err) {
@@ -427,7 +437,7 @@ exports.createNewMarksheet = async (req, res) => {
 
 //
 //
-// create page submit *
+// create page submit * (mongo)
 exports.createStudent = async (req, res) => {
   if (!req.auth.userId || !req.body) {
     return res.render("error")
@@ -497,7 +507,7 @@ exports.createStudent = async (req, res) => {
 
 //
 //
-// update student data
+// update student data (mongo)
 exports.updateStudent = async (req, res) => {
   const studentData = {}
   try {
@@ -516,13 +526,13 @@ exports.updateStudent = async (req, res) => {
       const classname = req.body.class
       const nationality = req.body.nationality
       const email = req.body.email
-      const imageurl = req.body.imageurl
+      // const imageurl = req.body.imageurl
 
       let imageURL = null
-      let thumbnailURL = imageurl.replace(
-        fname + lname,
-        fname + lname + "thumb"
-      )
+      // let thumbnailURL = imageurl.replace(
+      //   fname + lname,
+      //   fname + lname + "thumb"
+      // )
       if (req.file) {
         const file = req.file
         const inputBuffer = file.buffer
@@ -541,16 +551,16 @@ exports.updateStudent = async (req, res) => {
         }
 
         // console.log(imageurl, thumbnailURL)
-        await del(imageurl).then(async () => {
-          await del(thumbnailURL).then(async () => {
-            imageURL = await toVercelBlob(fname + lname, inputBuffer)
-            const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
-            thumbnailURL = await toVercelBlob(
-              fname + lname + "thumb",
-              outBuffer
-            )
-          })
-        })
+        // await del(imageurl).then(async () => {
+        //   await del(thumbnailURL).then(async () => {
+        //     imageURL = await toVercelBlob(fname + lname, inputBuffer)
+        //     const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
+        //     thumbnailURL = await toVercelBlob(
+        //       fname + lname + "thumb",
+        //       outBuffer
+        //     )
+        //   })
+        // })
       }
       if (fname !== undefined && fname !== null && fname !== "") {
         studentData.s_firstname = fname
@@ -587,8 +597,7 @@ exports.updateStudent = async (req, res) => {
         studentData.s_image_url = imageURL
       }
 
-      studentData.updatedAt = new Date()
-      await Students.update(studentData, { where: { s_id: sid } })
+      await updateData(Students, { s_id: sid, isRemoved: false }, studentData)
 
       res.redirect("/dashboard")
       await Crudlogs.create({
@@ -599,14 +608,14 @@ exports.updateStudent = async (req, res) => {
       return
     }
   } catch (err) {
-    // console.error(err)
+    console.error(err)
     return res.render("error")
   }
 }
 
 //
 //
-// delete data *
+// delete data * (mongo)
 exports.delete = async (req, res) => {
   if (!req.auth.userId) {
     return res.render("error")
@@ -615,12 +624,10 @@ exports.delete = async (req, res) => {
       const user = await clerkClient.users.getUser(req.auth.userId)
 
       const sid = req.params.sid
-      await Students.update(
-        { isRemoved: true, updatedAt: new Date() },
-        { where: { s_id: sid } }
-      )
-      res.send(200)
 
+      await updateData(Students, { s_id: sid }, { isRemoved: true })
+
+      res.send(200)
       await Crudlogs.create({
         user_id: user.username,
         action_type: "DELETE",
