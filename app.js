@@ -2,6 +2,8 @@ const express = require("express")
 const path = require("path")
 const bodyParser = require("body-parser")
 const { connectDB } = require("./config/postgres")
+const { connectDBM } = require("./config/mongo")
+
 require("dotenv").config()
 
 const app = express()
@@ -12,7 +14,7 @@ const apiRoutes = require("./routes/apiRouter")
 
 // connect database
 connectDB()
-
+connectDBM()
 //middlewares
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
