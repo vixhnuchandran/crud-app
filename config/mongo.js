@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 require("dotenv").config()
 
-const connectDB = async function () {
+const connectDBM = async function () {
   mongoose
     .connect(process.env.MONGODB_URL)
     .then(data => {
@@ -12,4 +12,4 @@ const connectDB = async function () {
     })
 }
 
-module.exports = connectDB
+module.exports = { connectDBM }
