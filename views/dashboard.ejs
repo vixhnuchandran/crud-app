@@ -109,10 +109,7 @@
                 },
                 {
                   class: "text-center px-3 py-5 text-sm text-gray-500",
-                  content: `<div class="text-gray-900">${student.birthdate
-                    .split("-")
-                    .reverse()
-                    .join("-")}</div>`,
+                  content: `<div class="text-gray-900">${student.birthdate}</div>`,
                 },
                 {
                   class:
@@ -523,8 +520,8 @@
                     class="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500"
                   >
                     <div class="text-gray-900">
-                      <%= students[i].birthdate.split('-').reverse().join('-')
-                      %>
+                      <%- new
+                      Date(students[i].birthdate).toLocaleDateString('en-GB') %>
                     </div>
                   </td>
                   <% } %>

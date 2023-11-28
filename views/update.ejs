@@ -111,12 +111,14 @@
               class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
               for="birth-date"
               >Birth Date</label
-            >
+            >         <% const birthdateValue = student.birthdate.toISOString().split('T')[0]
+            %>
             <input
               class="form-input appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
               id="birth-date"
               type="date"
-              value="<%= student.birthdate %>"
+      
+              value="<%= birthdateValue %>"
               name="birthdate"
             />
 
@@ -189,14 +191,14 @@
               name="nationality"
             >
               <option value="" disabled>Select nationality</option>
-              <option value="Indian" <%= student.nationality === 'Indian' ? 'selected' : '' %>>Indian</option>
-              <option value="American" <%= student.nationality === 'American' ? 'selected' : '' %>>American</option>
-              <option value="British" <%= student.nationality === 'British' ? 'selected' : '' %>>British</option>
-              <option value="Canadian" <%= student.nationality === 'Canadian' ? 'selected' : '' %>>Canadian</option>
-              <option value="Australian" <%= student.nationality === 'Australian' ? 'selected' : '' %>>Australian</option>
-              <option value="French" <%= student.nationality === 'French' ? 'selected' : '' %>>French</option>
-              <option value="German" <%= student.nationality === 'German' ? 'selected' : '' %>>German</option>
-              <option value="Japanese" <%= student.nationality === 'Japanese' ? 'selected' : '' %>>Japanese</option>
+              <option value="Indian" <%= student.nationality === 'Indian' ? 'selected' : '' %> >Indian</option>
+              <option value="American" <%= student.nationality === 'American' ? 'selected' : '' %> >American</option>
+              <option value="British" <%= student.nationality === 'British' ? 'selected' : '' %> >British</option>
+              <option value="Canadian" <%= student.nationality === 'Canadian' ? 'selected' : '' %> >Canadian</option>
+              <option value="Australian" <%= student.nationality === 'Australian' ? 'selected' : '' %> >Australian</option>
+              <option value="French" <%= student.nationality === 'French' ? 'selected' : '' %> >French</option>
+              <option value="German" <%= student.nationality === 'German' ? 'selected' : '' %> >German</option>
+              <option value="Japanese" <%= student.nationality === 'Japanese' ? 'selected' : '' %> >Japanese</option>
             </select>
             
               <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
