@@ -1,10 +1,6 @@
 const { Router } = require("express")
 const route = Router()
 const { Students } = require("../models/mongo/students")
-const Crudlogs = require("../models/postgres/crudlog")
-const { Op } = require("sequelize")
-const mangoose = require("mongoose")
-const { readData } = require("../utils/mongooseUtils")
 
 route.get("/api/v1/students", async (req, res) => {
   const search = req.query.search
