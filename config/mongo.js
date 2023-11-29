@@ -3,7 +3,7 @@ require("dotenv").config()
 
 const connectDBM = async function () {
   mongoose
-    .connect(process.env.MONGODB_URL)
+    .connect(process.env.MONGODB_URL, {})
     .then(data => {
       console.log("Database connected successfully")
     })
