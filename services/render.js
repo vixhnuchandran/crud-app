@@ -76,11 +76,20 @@ exports.dashboard = async (req, res) => {
         tSortBy = "s_id"
       }
 
+      let proj = {}
+
+      if (attributes) {
+        attributes.forEach(([key, value]) => {
+          proj[value] = `$${key}`
+        })
+      }
+
       const filter = {
         isRemoved: false,
       }
 
-      const projection = {
+      console.log(proj)
+      const defaultProjection = {
         studentId: "$s_id",
         firstname: "$s_firstname",
         lastname: "$s_lastname",
@@ -89,6 +98,10 @@ exports.dashboard = async (req, res) => {
         class: "$s_class",
         imageurl: "$s_image_url",
       }
+
+      const projection =
+        proj && Object.keys(proj).length > 0 ? proj : defaultProjection
+
       const order = [[tSortBy, orderType]]
       const limit = resultsPerPage
       const offset = startingLimit
@@ -151,26 +164,29 @@ exports.marksheet = async (req, res) => {
         email: "$s_emailid",
         class: "$s_class",
         imageurl: "$s_image_url",
+        students_mark: "$s_marks",
       })
 
       const studentData = data.toJSON()
-      console.log(studentData)
-      if (!studentData.students_mark) {
+      console.log()
+      if (studentData.students_mark[0] === undefined) {
         return res.status(404).render("createMarksheet", { studentData })
       }
 
-      const mathsResult = calculateGradeAndGPA(studentData.students_mark.maths)
+      const mathsResult = calculateGradeAndGPA(
+        studentData.students_mark[0].maths
+      )
       const physicsResult = calculateGradeAndGPA(
-        studentData.students_mark.physics
+        studentData.students_mark[0].physics
       )
       const chemistryResult = calculateGradeAndGPA(
-        studentData.students_mark.chemistry
+        studentData.students_mark[0].chemistry
       )
       const biologyResult = calculateGradeAndGPA(
-        studentData.students_mark.biology
+        studentData.students_mark[0].biology
       )
       const languageResult = calculateGradeAndGPA(
-        studentData.students_mark.language
+        studentData.students_mark[0].language
       )
 
       const maths = { grade: mathsResult.grade, gpa: mathsResult.gpa }
@@ -180,8 +196,10 @@ exports.marksheet = async (req, res) => {
         gpa: chemistryResult.gpa,
       }
       const biology = { grade: biologyResult.grade, gpa: biologyResult.gpa }
-      const language = { grade: languageResult.grade, gpa: languageResult.gpa }
-
+      const language = {
+        grade: languageResult.grade,
+        gpa: languageResult.gpa,
+      }
       return res.status(200).render("marksheet", {
         studentData,
         maths,
@@ -224,7 +242,6 @@ exports.contactInfo = async (req, res) => {
       let studentData = await readData.one(Students, filter, projection)
 
       studentData = studentData.toJSON()
-      console.log(studentData)
       return res.status(200).render("contact", {
         studentData,
       })
@@ -259,7 +276,6 @@ exports.studentInfo = async (req, res) => {
 
       let studentData = await readData.one(Students, filter, projection)
       studentData = studentData.toJSON()
-      console.log(studentData)
       return res.status(200).render("student", {
         studentData,
       })
@@ -298,7 +314,6 @@ exports.view = async (req, res) => {
       let studentData = await readData.one(Students, filter, projection)
 
       studentData = studentData.toJSON()
-      console.log(studentData)
       const age = calculateAge(studentData.birthdate)
 
       return res.status(200).render("view", {
@@ -421,15 +436,21 @@ exports.createNewMarksheet = async (req, res) => {
   } else {
     const sid = req.params.sid
     try {
-      await Marks.create({
-        s_id: sid,
-        maths: req.body.maths,
-        physics: req.body.physics,
-        chemistry: req.body.chemistry,
-        biology: req.body.biology,
-        language: req.body.language,
-      })
+      const filter = { s_id: sid }
+      const update = {
+        s_marks: [
+          {
+            maths: req.body.maths,
+            physics: req.body.physics,
+            chemistry: req.body.chemistry,
+            biology: req.body.biology,
+            language: req.body.language,
+          },
+        ],
+      }
+      const response = await updateData(Students, filter, update)
 
+      console.log(response)
       return res.status(200).redirect(`/dashboard/marksheet/${sid}`)
     } catch (error) {}
   }
