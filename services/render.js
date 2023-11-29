@@ -36,7 +36,7 @@ exports.dashboard = async (req, res) => {
           ? req.query.sortby
           : "id"
 
-      orderType = req.query.order === "asc" ? "desc" : "asc"
+      orderType = req.query.order === "1" ? "-1" : "1"
 
       if (req.query.columns) {
         colValues = req.query.columns
@@ -80,7 +80,7 @@ exports.dashboard = async (req, res) => {
           proj[value] = `$${key}`
         })
       }
-
+      console.log(orderType)
       const filter = {
         isRemoved: false,
       }
@@ -99,7 +99,8 @@ exports.dashboard = async (req, res) => {
       const projection =
         proj && Object.keys(proj).length > 0 ? proj : defaultProjection
 
-      const order = [[tSortBy, orderType]]
+      const order = [[tSortBy, parseInt(orderType)]]
+      console.log(order)
       const limit = resultsPerPage
       const offset = startingLimit
 
@@ -492,11 +493,15 @@ exports.createStudent = async (req, res) => {
 
       const studentData = {
         s_id: req.body.id,
-        s_firstname: req.body.firstname.trim(),
-        s_lastname: req.body.lastname.trim(),
+        s_firstname: req.body.firstname
+          .trim()
+          .replace(/\b\w/g, char => char.toUpperCase()),
+        s_lastname: req.body.lastname
+          .trim()
+          .replace(/\b\w/g, char => char.toUpperCase()),
         s_birthdate: req.body.birthdate,
         s_contactno: req.body.contact,
-        s_emailid: req.body.email,
+        s_emailid: req.body.email.trim(),
         s_gender: req.body.gender,
         s_class: req.body.class.trim(),
         s_nationality: req.body.nationality,
@@ -540,15 +545,19 @@ exports.updateStudent = async (req, res) => {
       const user = await clerkClient.users.getUser(req.auth.userId)
 
       const sid = req.params.sid
-      const fname = req.body.firstname.trim()
-      const lname = req.body.lastname.trim()
+      const fname = req.body.firstname
+        .trim()
+        .replace(/\b\w/g, char => char.toUpperCase())
+      const lname = req.body.lastname
+        .trim()
+        .replace(/\b\w/g, char => char.toUpperCase())
       const birthdate = req.body.birthdate
       const phone = req.body.contact
       const address = req.body.address.trim()
       const gender = req.body.gender
       const classname = req.body.class
       const nationality = req.body.nationality
-      const email = req.body.email
+      const email = req.body.email.trim()
       // const imageurl = req.body.imageurl
 
       let imageURL = null
