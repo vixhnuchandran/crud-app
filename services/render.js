@@ -1,10 +1,7 @@
 const { put, del } = require("@vercel/blob")
-// const Students = require("../models/postgres/student")
 const Crudlogs = require("../models/postgres/crudlog")
-// const Marks = require("../models/postgres/marks")
 
-const { Students, Marks } = require("../models/mongo/students")
-// const Crudlogs = require("../models/mongo/")
+const { Students } = require("../models/mongo/students")
 
 const { createData, readData, updateData } = require("../utils/mongooseUtils")
 const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
@@ -492,22 +489,27 @@ exports.createStudent = async (req, res) => {
         //   const outBuffer = await sharp(inputBuffer).resize(50, 50).toBuffer()
         //   await toVercelBlob(fname + lname + "thumb", outBuffer)
       }
-      const newStudent = await Students.create({
+
+      const studentData = {
+        s_id: req.body.id,
         s_firstname: req.body.firstname.trim(),
         s_lastname: req.body.lastname.trim(),
         s_birthdate: req.body.birthdate,
         s_contactno: req.body.contact,
         s_emailid: req.body.email,
         s_gender: req.body.gender,
-        s_class: req.body.class,
+        s_class: req.body.class.trim(),
         s_nationality: req.body.nationality,
         s_address: req.body.address.trim(),
         s_image_url: imageURL,
-      })
+      }
+
+      const newStudent = await createData(Students, studentData)
 
       res.redirect("/dashboard")
 
       const studentId = newStudent.s_id
+
       await Crudlogs.create({
         user_id: user.username,
         action_type: "CREATE",
