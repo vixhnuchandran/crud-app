@@ -1,37 +1,8 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
+const { connectDBM } = require("../../config/mongo")
 
-const studentMarks = new Schema(
-  {
-    s_id: {
-      type: Number,
-      unique: true,
-    },
-
-    maths: {
-      type: Number,
-      required: true,
-    },
-    physics: {
-      type: Number,
-      required: false,
-    },
-    chemistry: {
-      type: Number,
-      required: true,
-    },
-    biology: {
-      type: Number,
-      required: true,
-    },
-    language: {
-      type: Number,
-      required: true,
-    },
-  },
-  { timestamps: false }
-)
-const Marks = mongoose.model("students_marks", studentMarks, "students_marks")
+connectDBM()
 
 const studentsInfo = new Schema(
   {
@@ -81,24 +52,42 @@ const studentsInfo = new Schema(
       type: String,
       default: null,
     },
+    s_marks: {
+      type: [
+        {
+          maths: {
+            type: Number,
+            required: true,
+          },
+          physics: {
+            type: Number,
+            required: false,
+          },
+          chemistry: {
+            type: Number,
+            required: true,
+          },
+          biology: {
+            type: Number,
+            required: true,
+          },
+          language: {
+            type: Number,
+            required: true,
+          },
+        },
+      ],
+      required: false,
+    },
+
     isRemoved: {
       type: Boolean,
       default: false,
     },
-    marks: { type: mongoose.ObjectId, ref: "Marks" },
   },
   { timestamps: false }
 )
 
 const Students = mongoose.model("students_info", studentsInfo, "students_info")
 
-// Students.findOne({ s_id: 4 })
-//   .populate({ path: "marks" })
-//   .then(data => {
-//     console.log(data.toJSON())
-//   })
-//   .catch(error => {
-//     console.error(error)
-//   })
-
-module.exports = { Students, Marks }
+module.exports = { Students }
