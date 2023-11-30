@@ -1,19 +1,33 @@
-const { put, del } = require("@vercel/blob")
+// const { put, del } = require("@vercel/blob")
 const Crudlogs = require("../models/postgres/crudlog")
 
-const { Students } = require("../models/mongo/students")
+const { Students, Roles } = require("../models/mongo/students")
 
 const { createData, readData, updateData } = require("../utils/mongooseUtils")
 const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
 
-const sharp = require("sharp")
+// const sharp = require("sharp")
 const { clerkClient } = require("@clerk/clerk-sdk-node")
 require("dotenv").config()
+
+async function checkAdminStatus(userId) {
+  try {
+    const userRole = await Roles.findOne({ user_id: userId })
+    if (userRole) {
+      const isAdmin = userRole.isAdmin
+      return isAdmin
+    } else {
+      return false
+    }
+  } catch (error) {}
+}
 
 //
 //
 // dashboard (mongo)
 exports.dashboard = async (req, res) => {
+  const privil = await checkAdminStatus(req.auth.userId)
+
   if (!req.auth.userId) {
     return res.render("dashboardError", { message: "Access to Dashboard" })
   } else {
@@ -121,6 +135,7 @@ exports.dashboard = async (req, res) => {
 
       const students = data.map(student => student.toJSON())
       return res.render("dashboard", {
+        privil,
         orderType,
         colValues,
         sortby,
@@ -316,6 +331,8 @@ exports.view = async (req, res) => {
   }
 }
 
+//
+//
 //logs
 exports.logs = async (req, res) => {
   if (!req.auth.userId) {
@@ -376,9 +393,10 @@ exports.createMarksheet = (req, res) => {
 //
 // update form page
 exports.update = async (req, res) => {
+  const privil = await checkAdminStatus(req.auth.userId)
   if (!req.auth.userId) {
     return res.render("error")
-  } else {
+  } else if (privil) {
     try {
       const sid = req.params.sid
       const projection = {
@@ -407,6 +425,8 @@ exports.update = async (req, res) => {
     } catch (err) {
       return
     }
+  } else {
+    res.render("error")
   }
 }
 
@@ -638,25 +658,26 @@ exports.updateStudent = async (req, res) => {
 //
 // delete data * (mongo)
 exports.delete = async (req, res) => {
+  const privil = await checkAdminStatus(req.auth.userId)
+
   if (!req.auth.userId) {
     return res.render("error")
-  } else {
+  } else if (privil) {
     try {
-      const user = await clerkClient.users.getUser(req.auth.userId)
-
       const sid = req.params.sid
 
       await updateData(Students, { s_id: sid }, { isRemoved: true })
 
-      res.send(200)
       await Crudlogs.create({
         user_id: user.username,
         action_type: "DELETE",
         target_student_id: sid,
       })
-      return
+      return res.sendStatus(200)
     } catch (err) {
       return res.render("error")
     }
+  } else {
+    res.render(error)
   }
 }
