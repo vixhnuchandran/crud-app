@@ -88,6 +88,21 @@ const studentsInfo = new Schema(
   { timestamps: false }
 )
 
+const manageRoles = new Schema(
+  {
+    user_id: {
+      type: String,
+      unique: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: false }
+)
+
+const Roles = mongoose.model("roles", manageRoles)
 const Students = mongoose.model("students_info", studentsInfo)
 
-module.exports = { Students }
+module.exports = { Students, Roles }
