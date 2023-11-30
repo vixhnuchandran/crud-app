@@ -1,7 +1,5 @@
-const connectDB = require("../config/postgres")
 const Students = require("../models/postgres/student")
 const Marks = require("../models/postgres/marks")
-const Crudlogs = require("../models/postgres/crudlog")
 
 // Function to create new student data
 const createStudent = async newData => {

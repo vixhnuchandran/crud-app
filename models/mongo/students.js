@@ -88,6 +88,6 @@ const studentsInfo = new Schema(
   { timestamps: false }
 )
 
-const Students = mongoose.model("students_info", studentsInfo, "students_info")
+const Students = mongoose.model("students_info", studentsInfo)
 
 module.exports = { Students }

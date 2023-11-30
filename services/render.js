@@ -96,8 +96,7 @@ exports.dashboard = async (req, res) => {
         imageurl: "$s_image_url",
       }
 
-      const projection =
-        proj && Object.keys(proj).length > 0 ? proj : defaultProjection
+      const projection = Object.keys(proj).length > 0 ? proj : defaultProjection
 
       const order = [[tSortBy, parseInt(orderType)]]
       console.log(order)
