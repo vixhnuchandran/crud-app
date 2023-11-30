@@ -151,23 +151,38 @@
         }
       }
 
-      async function deleteUser(userId) {
-        const confirmed = confirm(
-          "Are you sure you want to delete this Student?"
-        )
-        const loader = document.getElementById("pre-loader")
-        if (confirmed) {
-          loader.style.display = "block"
-          main.classList.add("blur")
+      async function deleteUser(sid, privil) {
+        if (privil === "false") {
+          alert("Cannot perform this action!")
+          return
+        } else if (privil === "true") {
+          const confirmed = confirm(
+            "Are you sure you want to delete this Student?"
+          )
+          const loader = document.getElementById("pre-loader")
 
-          try {
-            const response = await fetch(`/dashboard/delete/${userId}`, {
-              method: "PATCH",
-            })
-            if (response.ok) {
-              window.location.reload()
-            }
-          } catch (error) {}
+          if (confirmed) {
+            loader.style.display = "block"
+            main.classList.add("blur")
+            try {
+              const response = await fetch(`/dashboard/delete/${sid}`, {
+                method: "PATCH",
+              })
+
+              if (response.ok) {
+                window.location.reload()
+              }
+            } catch (error) {}
+          }
+        }
+      }
+
+      function editUser(sid, privil) {
+        if (privil === "false") {
+          alert("Cannot perform this action!")
+          return
+        } else if (privil === "true") {
+          window.location.href = "/dashboard/update/" + sid
         }
       }
 
@@ -215,7 +230,6 @@
         <div></div>
       </div>
     </div>
-
     <div id="main" class="mx-20 mt-10">
       <div class="">
         <div class="sm:flex sm:items-center mt-3">
@@ -534,15 +548,15 @@
                     <a href="/dashboard/view/<%= students[i].studentId %>"
                       ><i class="fa-solid fa-eye text-indigo-800"></i
                     ></a>
-                    <a
-                      href="/dashboard/update/<%= students[i].studentId %>"
+                    <button
+                      onclick="editUser('<%= students[i].studentId %>', '<%= privil %>')"
                       class=""
                     >
                       <i class="fa-solid fa-pen-to-square text-green-800"></i>
-                    </a>
+                    </button>
 
                     <button
-                      onclick="deleteUser('<%= students[i].studentId %>')"
+                      onclick="deleteUser('<%= students[i].studentId %>', '<%= privil %>')"
                     >
                       <i class="fa-sharp fa-solid fa-trash text-red-800"></i>
                     </button>
