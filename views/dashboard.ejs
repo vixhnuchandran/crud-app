@@ -109,7 +109,9 @@
                 },
                 {
                   class: "text-center px-3 py-5 text-sm text-gray-500",
-                  content: `<div class="text-gray-900">${student.birthdate}</div>`,
+                  content: `<div class="text-gray-900">${new Date(
+                    student.birthdate
+                  ).toLocaleDateString("en-GB")}</div>`,
                 },
                 {
                   class:
