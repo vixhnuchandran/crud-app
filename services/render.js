@@ -80,12 +80,10 @@ exports.dashboard = async (req, res) => {
           proj[value] = `$${key}`
         })
       }
-      console.log(orderType)
       const filter = {
         isRemoved: false,
       }
 
-      console.log(proj)
       const defaultProjection = {
         studentId: "$s_id",
         firstname: "$s_firstname",
@@ -99,7 +97,6 @@ exports.dashboard = async (req, res) => {
       const projection = Object.keys(proj).length > 0 ? proj : defaultProjection
 
       const order = [[tSortBy, parseInt(orderType)]]
-      console.log(order)
       const limit = resultsPerPage
       const offset = startingLimit
 
@@ -134,7 +131,6 @@ exports.dashboard = async (req, res) => {
         numOfPages,
       })
     } catch (error) {
-      console.log(error)
       return res.render("error")
     }
   }
@@ -165,7 +161,6 @@ exports.marksheet = async (req, res) => {
       })
 
       const studentData = data.toJSON()
-      console.log()
       if (studentData.students_mark[0] === undefined) {
         return res.status(404).render("createMarksheet", { studentData })
       }
@@ -206,7 +201,6 @@ exports.marksheet = async (req, res) => {
         language,
       })
     } catch (error) {
-      console.log(error.message)
       return res.status(500).render("error")
     }
   }
@@ -277,7 +271,6 @@ exports.studentInfo = async (req, res) => {
         studentData,
       })
     } catch (error) {
-      console.log(error)
       return res.status(200).render("error")
     }
   }
@@ -409,7 +402,6 @@ exports.update = async (req, res) => {
         )
 
         const student = data.toJSON()
-        console.log(student)
         return res.render("update", { heading: "Update Student", student })
       }
     } catch (err) {
@@ -446,8 +438,6 @@ exports.createNewMarksheet = async (req, res) => {
         ],
       }
       const response = await updateData(Students, filter, update)
-
-      console.log(response)
       return res.status(200).redirect(`/dashboard/marksheet/${sid}`)
     } catch (error) {}
   }
