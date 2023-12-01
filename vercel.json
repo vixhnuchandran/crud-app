@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "services/render.js": {
+      "maxDuration": 10
+    }
+  },
   "version": 2,
 
   "builds": [
@@ -12,10 +17,5 @@
       "src": "/(.*)",
       "dest": "app.js"
     }
-  ],
-  "functions": {
-    "services/render.js": {
-      "maxDuration": 10
-    }
-  }
+  ]
 }
