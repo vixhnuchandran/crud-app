@@ -4,10 +4,15 @@ const Crudlogs = require("../models/postgres/crudlog")
 const { Students, Roles } = require("../models/mongo/students")
 
 const { createData, readData, updateData } = require("../utils/mongooseUtils")
-const { calculateGradeAndGPA, calculateAge } = require("../utils/utils")
+const {
+  calculateGradeAndGPA,
+  calculateAge,
+  isStorybrainEmail,
+} = require("../utils/utils")
 
 // const sharp = require("sharp")
-const { clerkClient } = require("@clerk/clerk-sdk-node")
+const { clerkClient, users } = require("@clerk/clerk-sdk-node")
+const { request } = require("express")
 require("dotenv").config()
 
 async function checkAdminStatus(userId) {
@@ -26,11 +31,35 @@ async function checkAdminStatus(userId) {
 //
 // dashboard (mongo)
 exports.dashboard = async (req, res) => {
-  const privil = await checkAdminStatus(req.auth.userId)
+  let userId, emailId, isSbEmail
 
-  if (!req.auth.userId) {
+  userId = req.auth.userId || null
+  try {
+    emailId =
+      (await (
+        await clerkClient.users.getUser(userId)
+      ).emailAddresses[0].emailAddress) || null
+
+    isSbEmail = isStorybrainEmail(emailId)
+  } catch (error) {
+    console.log(error.message)
+    return res.redirect("/")
+  }
+
+  if (!userId) {
     return res.render("dashboardError", { message: "Access to Dashboard" })
+  } else if (!isSbEmail) {
+    console.log("not storybrain")
+    try {
+      await clerkClient.users.deleteUser(userId)
+
+      return res.render("notstorybrain")
+    } catch (error) {
+      res.sendStatus(404).render("error")
+    }
   } else {
+    const privil = await checkAdminStatus(userId)
+
     try {
       const resultsPerPage = 7
       const count = await Students.countDocuments({ isRemoved: false })
