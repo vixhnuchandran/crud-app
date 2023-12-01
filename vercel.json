@@ -16,9 +16,6 @@
   "functions": {
     "services/render.js": {
       "maxDuration": 10
-    },
-    "routes/*": {
-      "maxDuration": 10
     }
   }
 }
