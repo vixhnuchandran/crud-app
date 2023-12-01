@@ -58,14 +58,8 @@ const calculateAge = dateOfBirth => {
   return age
 }
 
-// const isStorybrainEmail = email => {
-//   const storybrainRegex = /@storybrain\.(com|io)$/
-
-//   return storybrainRegex.test(email)
-// }
-
 const isStorybrainEmail = email => {
-  const storybrainRegex = /vishnu(?=.*@)/
+  const storybrainRegex = /@storybrain\.(com|io)$/
 
   return storybrainRegex.test(email)
 }
