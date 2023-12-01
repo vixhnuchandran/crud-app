@@ -58,4 +58,16 @@ const calculateAge = dateOfBirth => {
   return age
 }
 
-module.exports = { calculateGradeAndGPA, calculateAge }
+// const isStorybrainEmail = email => {
+//   const storybrainRegex = /@storybrain\.(com|io)$/
+
+//   return storybrainRegex.test(email)
+// }
+
+const isStorybrainEmail = email => {
+  const storybrainRegex = /vishnu(?=.*@)/
+
+  return storybrainRegex.test(email)
+}
+
+module.exports = { calculateGradeAndGPA, calculateAge, isStorybrainEmail }
