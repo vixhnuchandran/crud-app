@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "services/render.js": {
-      "maxDuration": 10
-    }
-  },
   "version": 2,
 
   "builds": [
