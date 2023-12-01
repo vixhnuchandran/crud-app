@@ -12,5 +12,10 @@
       "src": "/(.*)",
       "dest": "app.js"
     }
-  ]
+  ],
+  "functions": {
+    "services/render.js": {
+      "maxDuration": 10
+    }
+  }
 }
