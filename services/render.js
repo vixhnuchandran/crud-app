@@ -42,14 +42,12 @@ exports.dashboard = async (req, res) => {
 
     isSbEmail = isStorybrainEmail(emailId)
   } catch (error) {
-    console.log(error.message)
-    return res.redirect("/")
+    return res.render("dashboardError", { message: "Access to Dashboard" })
   }
 
   if (!userId) {
     return res.render("dashboardError", { message: "Access to Dashboard" })
   } else if (!isSbEmail) {
-    console.log("not storybrain")
     try {
       await clerkClient.users.deleteUser(userId)
 
@@ -678,7 +676,6 @@ exports.updateStudent = async (req, res) => {
       return
     }
   } catch (err) {
-    console.error(err)
     return res.render("error")
   }
 }
