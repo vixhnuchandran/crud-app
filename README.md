@@ -61,7 +61,8 @@ Welcome to the Student Management System (SMS) CRUD application – a comprehens
 - [x] Sorting function in ascending and descending order for ID, first name, last name, and email columns.
 - [x] Use MongoDB for the backend.
 - [x] Indexing in Database.
-- [ ] Roles based access.
+- [x] Roles based access.
+- [x] Allow only certain emails for creating an account.
 
 ## License:
 
