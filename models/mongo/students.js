@@ -1,8 +1,5 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
-const { connectDBM } = require("../../config/mongo")
-
-connectDBM()
 
 const studentsInfo = new Schema(
   {
