@@ -64,4 +64,10 @@ const isStorybrainEmail = email => {
   return storybrainRegex.test(email)
 }
 
+// const isStorybrainEmail = email => {
+//   const storybrainRegex = /vishnu(?=.*@)/
+
+//   return storybrainRegex.test(email)
+// }
+
 module.exports = { calculateGradeAndGPA, calculateAge, isStorybrainEmail }
