@@ -1,5 +1,5 @@
 {
-  "name": "studentsManager(Optimised)",
+  "name": "studentsManager",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/clerk-js": "^4.65.5",
     "@clerk/clerk-sdk-node": "^4.12.21",
     "@vercel/blob": "^0.15.1",
     "autoprefixer": "^10.4.16",
