@@ -33,12 +33,6 @@ route.get(
   services.studentInfo
 )
 
-// route.get(
-//   "/dashboard/marksheet/update/:sid",
-//   ClerkExpressWithAuth({}),
-//   services.upadteMarksheet
-// )
-
 route.get(
   "/dashboard/marksheet/:sid",
   ClerkExpressWithAuth({}),
