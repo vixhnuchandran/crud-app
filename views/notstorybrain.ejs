@@ -5,39 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link type="text/css" rel="stylesheet" href="/css/style.css" />
+    <script src="/js/index.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
     />
   </head>
   <body class="h-full">
-    <main
-      class="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8"
+    <%- include('include/_navbar.ejs') %>
+
+    <div
+      id="pre-loader"
+      class="fixed hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
     >
-      <div class="text-center">
-        <h1
-          class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl"
-        >
-          Invalid Email Domain
-        </h1>
-        <!-- <p class="mt-6 text-base leading-7 text-gray-600">
-          Sorry, we couldn’t find the page you’re looking for.
-        </p> -->
+      <div class="lds-spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
 
-        <!-- Custom error message for email not from Storybrain Organization -->
-        <p class="mt-6 text-base leading-7 text-red-600 font-semibold">
-          We're sorry, but the email domain used for sign up is not recognized.
-          Please make sure you're using a valid email address associated with
-          our platform.
-        </p>
-
-        <div class="mt-10 flex items-center justify-center gap-x-6">
-          <a
-            href="https://golden-moose-57.accounts.dev/sign-up"
-            class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Sign up
-          </a>
+    <main class="grid mt-36 place-items-center bg-white px-6 sm:py-32 lg:px-8">
+      <div class="border-l-4 border-yellow-400 bg-yellow-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-5 w-5 text-yellow-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-700">
+              The email domain used for sign-up is not recognized. Please ensure
+              you're using a valid email address associated with our platform.
+              <button
+                type="button"
+                onclick="Clerk.openSignUp()"
+                class="font-medium text-yellow-700 underline hover:text-yellow-600"
+              >
+                Sign Up.
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </main>
