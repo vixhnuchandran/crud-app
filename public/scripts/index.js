@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const startClerk = async () => {
     const Clerk = window.Clerk
 
+    const auth = await Clerk
     try {
       await Clerk.load()
 
@@ -27,9 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         userButton.appendChild(usernameDisplay)
       }
-    } catch (err) {
-      console.error("Error starting Clerk: ", err)
-    }
+    } catch (err) {}
   }
   ;(() => {
     const script = document.createElement("script")
